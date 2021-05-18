@@ -35,10 +35,8 @@ static unsigned int compileShader(unsigned int shaderType, const std::string& so
     if (result == GL_FALSE) {
         int errorMessageLength = 0;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &errorMessageLength);
-        //std::string message = "";
-        //glGetShaderInfoLog(id, errorMessageLength, &errorMessageLength, message.data());
-        char* message = (char*)alloca(errorMessageLength * sizeof(char));
-        glGetShaderInfoLog(id, errorMessageLength, &errorMessageLength, message);
+        std::string message = "";
+        glGetShaderInfoLog(id, errorMessageLength, &errorMessageLength, message.data());
 
         // A bit hacky, will eventually need proper logging.
         std::cout << "Failed to compile " << (shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!\n"
