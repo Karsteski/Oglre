@@ -9,14 +9,83 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <vector>
 #include <iostream>
+#include <string>
+#include <vector>
 
 const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
 
+// Ensure that source string does not go out of scope before running compileShader().
+static unsigned int compileShader(unsigned int shaderType, const std::string& source)
+{
+    unsigned int id = glCreateShader(shaderType);
+
+    // Note that source has to exist
+    const char* src = source.c_str();
+
+    const int numberOfShaderSources = 1;
+    // Note that strings must be null-terminated if passing length as nullptr.
+    glShaderSource(id, numberOfShaderSources, &src, nullptr);
+    glCompileShader(id);
+
+    // Error handling.
+    int result = 0;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE) {
+        int errorMessageLength = 0;
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &errorMessageLength);
+        //std::string message = "";
+        //glGetShaderInfoLog(id, errorMessageLength, &errorMessageLength, message.data());
+        char* message = (char*)alloca(errorMessageLength * sizeof(char));
+        glGetShaderInfoLog(id, errorMessageLength, &errorMessageLength, message);
+
+        // A bit hacky, will eventually need proper logging.
+        std::cout << "Failed to compile " << (shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!\n"
+                  << message << std::endl;
+
+        glDeleteShader(id);
+
+        return 0;
+    }
+
+    return id;
+}
+
+// Returns ID for a shader that combines the vertexShader and the fragmentShader.
+static unsigned int createShader(const std::string& vertexShader, const std::string& fragmentShader)
+{
+    // Need error handling.
+    unsigned int program = glCreateProgram();
+    unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
+    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+    // These steps create an executable that is run on the programmable vertex/fragment shader processer on the GPU.
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    glLinkProgram(program);
+    glValidateProgram(program);
+
+    // Delete to shaders once they have been linked and compiled.
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return program;
+}
+
 int main()
 {
+    if (__cplusplus == 201703L)
+        std::cout << "C++17\n";
+    else if (__cplusplus == 201402L)
+        std::cout << "C++14\n";
+    else if (__cplusplus == 201103L)
+        std::cout << "C++11\n";
+    else if (__cplusplus == 199711L)
+        std::cout << "C++98\n";
+    else
+        std::cout << "pre-standard C++\n";
+
     // GLFW Setup
     if (!glfwInit()) {
         std::cout << "GLFW Initialization failed!\n"
@@ -25,60 +94,98 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* glfwMakeContextCurrent(window);
-    << "GLFW Window creation failed\n"
-    << "Exiting...\n";
+    // I may just remove these, I can't get anything drawn with them set.
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    
+    GLFWwindow* window = glfwCreateWindow(initialWindowWidth, initialWindowHeight, "Oglre", NULL, NULL);
+    if (!window) {
+        std::cout << "GLFW Window creation failed\n"
+                  << "Exiting...\n";
 
-    exit(EXIT_FAILURE);
-}
+        exit(EXIT_FAILURE);
+    }
 
-// A valid OpenGL context must be created before initializing GLEW.
-bool error = glewInit();
-if (error != GLEW_OK) {
-    std::cout << "Error: Failed to initialize OpenGL function pointer loader!\n";
-}
-// Initialize OpenGL loader (GLEW in this project)
+    glfwMakeContextCurrent(window);
 
-// Printing OpenGL version for convenience
-std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
+    // A valid OpenGL context must be created before initializing GLEW.
+    bool error = glewInit();
+    if (error != GLEW_OK) {
+        std::cout << "Error: Failed to initialize OpenGL function pointer loader!\n";
+    }
+    // Initialize OpenGL loader (GLEW in this project).
 
-std::vector<float> trianglePositions = {
-    -0.5f, -0.5,
-    0.0f, 0.5f,
-    0.5f, -0.5f
-};
-// Main buffer
-unsigned int buffer
-    = 0;
-glGenBuffers(1, &buffer);
-glBindBuffer(GL_ARRAY_BUFFER, buffer);
-glBufferData(GL_ARRAY_BUFFER, )
+    // Printing OpenGL version for convenience.
+    std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
+
+    // clang-format off
+    std::vector<float> positions = {
+        -0.5f, -0.5,    
+        0.0f, 0.5f,
+        0.5f, -0.5f
+    };
+    // clang-format on
+
+    // Main buffer
+    // These should be moved to a struct eventually.
+    unsigned int buffer = 0;
+    const int numberOfBuffers = 1;
+    const int numberOfPoints = 6;
+    const int numberOfIndices = 3; // Note that indices are the vertices in the postions vector, specifed by 2 points.
+
+    glGenBuffers(numberOfBuffers, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, numberOfPoints * sizeof(float), positions.data(), GL_STATIC_DRAW);
+
+    // Should move these to a struct eventually.
+    const int attributeIndex = 0; // Attribute in this case refers to the position coordinates.
+    const int componentCount = 2; // This is the number of floats representing the position coordinates attribute.
+    const int stride = 2 * sizeof(float); // Number of bytes between each vertex.
+    const void* offset = 0; // Long explanation, see: http://docs.gl/gl4/glVertexAttribPointer
+
+    glVertexAttribPointer(attributeIndex, componentCount, GL_FLOAT, GL_FALSE, stride, offset);
+    // Must enable the generic vertex attribute array for the vertex to be drawn.
+    glEnableVertexAttribArray(attributeIndex);
+
+    // Temporary shader strings for testing.
+    std::string vertexShader = "#version 330 core\n"
+                               "\n"
+                               "layout(location = 0) in vec4 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "   gl_Position = position;\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 330 core\n"
+                                 "\n"
+                                 "layout(location = 0) out vec4 color;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+                                 "}\n";
+
+    unsigned int shader = createShader(vertexShader, fragmentShader);
+    glUseProgram(shader);
 
     // Main loop
-    while (!glfwWindowShouldClose(window))
-{
-    glfwPollEvents();
+    while (!glfwWindowShouldClose(window)) {
 
-    glClear(GL_COLOR_BUFFER_BIT);
+        // Render from this point on.
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDrawArrays(GL_TRIANGLES, 0, numberOfIndices);
 
-    // Triangle just to test library
-    glBegin(GL_TRIANGLES);
+        // Swaps the front and back buffers of the specified window.
+        glfwSwapBuffers(window);
 
-    glVertex2f(-0.5f, -0.5f);
-    glVertex2f(0.0f, 0.5f);
-    glVertex2f(0.5f, -0.5f);
+        // Poll and process events.
+        glfwPollEvents();
+    }
 
-    glEnd();
-    // Swaps the front and back buffers of the specified window.
-    glfwSwapBuffers(window);
-}
+    glfwDestroyWindow(window);
+    glfwTerminate();
 
-glfwDestroyWindow(window);
-glfwTerminate();
-
-exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }

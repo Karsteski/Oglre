@@ -1,4 +1,6 @@
-project('oglre','cpp', version : '0.1.0')
+project('oglre','cpp', version : '0.1.0', default_options : 'cpp_std=c++17')
+
+add_global_arguments('-std=c++17', language : 'cpp')
 
 glew_dep = dependency('glew')
 glfw_dep = dependency('glfw3')
