@@ -1,5 +1,6 @@
-project('oglre','cpp', version : '0.1.0', default_options : 'cpp_std=c++17')
+project('oglre','cpp', version : '0.1.0')
 
+# Not the Mesonic way to do this, but default_options : cpp_std=c++17 isn't working for some reason.
 add_global_arguments('-std=c++17', language : 'cpp')
 
 glew_dep = dependency('glew')

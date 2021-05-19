@@ -1,5 +1,6 @@
 // GLEW loads OpenGL function pointers from the system's graphics drivers.
 // glew.h MUST be included before gl.h
+// clang-format off
 #include <GL/glew.h>
 #include <GL/gl.h>
 
@@ -8,13 +9,60 @@
 // GLFW including OpenGL headers causes function definition ambiguity.
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+// clang-format on
 
+#include <array>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
+// Globals
 const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
+std::string shaderPath = "../resources/shaders/Basic.shader";
+
+// Takes care of returning the two strings from parseShader().
+struct ShaderProgramSource {
+    std::string vertexSource;
+    std::string fragmentSource;
+};
+
+static ShaderProgramSource parseShader(const std::string& filepath)
+{
+    // For separating the two stringstreams.
+    enum class ShaderType {
+        NONE = -1,
+        VERTEX = 0,
+        FRAGMENT = 1
+    };
+
+    std::ifstream stream(filepath);
+    std::array<std::stringstream, 2> ss;
+
+    std::string line = "";
+    ShaderType type = ShaderType::NONE;
+
+    // Read lines from the file while separating the two shader types into different stringstreams.
+    while (getline(stream, line)) {
+        if (line.find("#shader") != std::string::npos) {
+            if (line.find("vertex") != std::string::npos) {
+                type = ShaderType::VERTEX;
+            } else if (line.find("fragment") != std::string::npos) {
+                type = ShaderType::FRAGMENT;
+            }
+        } else {
+            ss[(int)type] << line << "\n";
+        }
+    }
+
+    ShaderProgramSource shaders;
+    shaders.vertexSource = ss[0].str();
+    shaders.fragmentSource = ss[1].str();
+
+    return shaders;
+}
 
 // Ensure that source string does not go out of scope before running compileShader().
 static unsigned int compileShader(unsigned int shaderType, const std::string& source)
@@ -73,6 +121,8 @@ static unsigned int createShader(const std::string& vertexShader, const std::str
 
 int main()
 {
+    // C++ version verification.
+    std::cout << "C++ version = ";
     if (__cplusplus == 201703L)
         std::cout << "C++17\n";
     else if (__cplusplus == 201402L)
@@ -92,13 +142,12 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-
     // I may just remove these, I can't get anything drawn with them set.
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    
+
     GLFWwindow* window = glfwCreateWindow(initialWindowWidth, initialWindowHeight, "Oglre", NULL, NULL);
     if (!window) {
         std::cout << "GLFW Window creation failed\n"
@@ -148,24 +197,9 @@ int main()
     // Must enable the generic vertex attribute array for the vertex to be drawn.
     glEnableVertexAttribArray(attributeIndex);
 
-    // Temporary shader strings for testing.
-    std::string vertexShader = "#version 330 core\n"
-                               "\n"
-                               "layout(location = 0) in vec4 position;\n"
-                               "void main()\n"
-                               "{\n"
-                               "   gl_Position = position;\n"
-                               "}\n";
-
-    std::string fragmentShader = "#version 330 core\n"
-                                 "\n"
-                                 "layout(location = 0) out vec4 color;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
-                                 "}\n";
-
-    unsigned int shader = createShader(vertexShader, fragmentShader);
+    // Shader creation.
+    ShaderProgramSource shaderSource = parseShader(shaderPath);
+    unsigned int shader = createShader(shaderSource.vertexSource, shaderSource.fragmentSource);
     glUseProgram(shader);
 
     // Main loop
@@ -182,6 +216,7 @@ int main()
         glfwPollEvents();
     }
 
+    glDeleteProgram(shader);
     glfwDestroyWindow(window);
     glfwTerminate();
 
