@@ -53,7 +53,7 @@ static ShaderProgramSource parseShader(const std::string& filepath)
                 type = ShaderType::FRAGMENT;
             }
         } else {
-            ss[(int)type] << line << "\n";
+            ss[static_cast<int>(type)] << line << "\n";
         }
     }
 
@@ -169,10 +169,15 @@ int main()
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
 
     // clang-format off
+    // Positions for two triangles that make up a square.
     std::vector<float> positions = {
         -0.5f, -0.5,    
-        0.0f, 0.5f,
-        0.5f, -0.5f
+        0.5f, -0.5f,
+        0.5f, 0.5f,
+
+        0.5f, 0.5f,
+        -0.5f, 0.5f,
+        -0.5f, -0.5f
     };
     // clang-format on
 
@@ -180,8 +185,8 @@ int main()
     // These should be moved to a struct eventually.
     unsigned int buffer = 0;
     const int numberOfBuffers = 1;
-    const int numberOfPoints = 6;
-    const int numberOfIndices = 3; // Note that indices are the vertices in the postions vector, specifed by 2 points.
+    const int numberOfPoints = 6 * 2;
+    const int numberOfIndices = 6; // Note that indices are the vertices in the postions vector, specifed by 2 points.
 
     glGenBuffers(numberOfBuffers, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -210,6 +215,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, numberOfIndices);
 
         // Swaps the front and back buffers of the specified window.
+        // The front buffer is the current buffer shown on screen, whilst the back is the data to be drawn to.
         glfwSwapBuffers(window);
 
         // Poll and process events.
