@@ -169,17 +169,20 @@ int main()
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
 
     // clang-format off
-    // Positions for two triangles that make up a square.
     std::vector<float> positions = {
-        -0.5f, -0.5,    
+        -0.5f, -0.5f,    
         0.5f, -0.5f,
         0.5f, 0.5f,
-
-        0.5f, 0.5f,
         -0.5f, 0.5f,
-        -0.5f, -0.5f
     };
     // clang-format on
+
+    // Index Buffer
+    // References the vector of positions necessary to draw two triangles making up a square.
+    std::vector<unsigned int> indices {
+        0, 1, 2,
+        2, 3, 0
+    };
 
     // Main buffer
     // These should be moved to a struct eventually.
@@ -191,6 +194,12 @@ int main()
     glGenBuffers(numberOfBuffers, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, numberOfPoints * sizeof(float), positions.data(), GL_STATIC_DRAW);
+
+    // Generate Index Buffer.
+    unsigned int indexBufferObject = 0;
+    glGenBuffers(numberOfBuffers, &indexBufferObject);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
     // Should move these to a struct eventually.
     const int attributeIndex = 0; // Attribute in this case refers to the position coordinates.
@@ -212,7 +221,9 @@ int main()
 
         // Render from this point on.
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, numberOfIndices);
+
+        // Index Buffer is already bound, and so the pointer to the IB location can just be nullptr.
+        glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
 
         // Swaps the front and back buffers of the specified window.
         // The front buffer is the current buffer shown on screen, whilst the back is the data to be drawn to.
