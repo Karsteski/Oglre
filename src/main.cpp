@@ -23,6 +23,22 @@ const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.shader";
 
+static void GLClearError()
+{
+    // Clear previous errors.
+    while (glGetError() != GL_NO_ERROR) {
+        continue;
+    };
+}
+
+static void GLCheckError()
+{
+    // Run until no more errors to catch.
+    while (GLenum error = glGetError()) {
+        std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
+    }
+}
+
 // Takes care of returning the two strings from parseShader().
 struct ShaderProgramSource {
     std::string vertexSource;
