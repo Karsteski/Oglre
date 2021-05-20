@@ -23,20 +23,116 @@ const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.shader";
 
-static void GLClearError()
+// Callback function for printing OpenGL debug statements.
+// Note that OpenGL Debug Output must be enabled to utilize glDebugMessageCallback() and consequently this function.
+void APIENTRY glDebugPrintMessage(GLenum source, GLenum type, unsigned int id, GLenum severity, int length, const char* message, const void* data)
 {
-    // Clear previous errors.
-    while (glGetError() != GL_NO_ERROR) {
-        continue;
-    };
-}
+    /*
 
-static void GLCheckError()
-{
-    // Run until no more errors to catch.
-    while (GLenum error = glGetError()) {
-        std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
+    To enable the debugging layer of OpenGL:
+
+    glEnable(GL_DEBUG_OUTPUT); - This is a faster version but there are no debugger breakpoints.
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); - Callback is synchronized w/ errors, and a breakpoint can be placed on the callback to get a stacktrace for the GL error. 
+    
+    // Followed by the call:
+    glDebugMessageCallback(glDebugPrintMessage, nullptr);
+    */
+
+    std::string sourceMessage = "";
+    std::string typeMessage = "";
+    std::string severityMessage = "";
+
+    switch (source) {
+    case GL_DEBUG_SOURCE_API: {
+        sourceMessage = "API";
+        break;
     }
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: {
+        sourceMessage = "WINDOW SYSTEM";
+        break;
+    }
+    case GL_DEBUG_SOURCE_SHADER_COMPILER: {
+        sourceMessage = "SHADER COMPILER";
+        break;
+    }
+    case GL_DEBUG_SOURCE_THIRD_PARTY: {
+        sourceMessage = "THIRD PARTY";
+        break;
+    }
+    case GL_DEBUG_SOURCE_APPLICATION: {
+        sourceMessage = "APPLICATION";
+        break;
+    }
+    case GL_DEBUG_SOURCE_OTHER: {
+        sourceMessage = "UNKNOWN";
+        break;
+    }
+    default: {
+        sourceMessage = "UNKNOWN";
+        break;
+    }
+    }
+
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR: {
+        typeMessage = "ERROR";
+        break;
+    }
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: {
+        typeMessage = "DEPRECATED BEHAVIOUR";
+        break;
+    }
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: {
+        typeMessage = "UNDEFINED BEHAVIOUR";
+        break;
+    }
+    case GL_DEBUG_TYPE_PORTABILITY: {
+        typeMessage = "PORTABILITY";
+        break;
+    }
+    case GL_DEBUG_TYPE_PERFORMANCE: {
+        typeMessage = "PERFORMANCE";
+        break;
+    }
+    case GL_DEBUG_TYPE_OTHER: {
+        typeMessage = "OTHER";
+        break;
+    }
+    case GL_DEBUG_TYPE_MARKER: {
+        typeMessage = "MARKER";
+        break;
+    }
+    default: {
+        typeMessage = "UNKNOWN";
+        break;
+    }
+    }
+
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH: {
+        severityMessage = "HIGH";
+        break;
+    }
+    case GL_DEBUG_SEVERITY_MEDIUM: {
+        severityMessage = "MEDIUM";
+        break;
+    }
+    case GL_DEBUG_SEVERITY_LOW: {
+        severityMessage = "LOW";
+        break;
+    }
+    case GL_DEBUG_SEVERITY_NOTIFICATION: {
+        severityMessage = "NOTIFICATION";
+        break;
+    }
+    default: {
+        severityMessage = "UNKNOWN";
+        break;
+    }
+    }
+
+    std::cout << id << ": " << typeMessage << " of " << severityMessage << ", raised from "
+              << sourceMessage << ": " << message << std::endl;
 }
 
 // Takes care of returning the two strings from parseShader().
@@ -139,7 +235,9 @@ int main()
 {
     // C++ version verification.
     std::cout << "C++ version = ";
-    if (__cplusplus == 201703L)
+    if (__cplusplus == 202002L)
+        std::cout << "C++20\n";
+    else if (__cplusplus == 201703L)
         std::cout << "C++17\n";
     else if (__cplusplus == 201402L)
         std::cout << "C++14\n";
@@ -164,6 +262,9 @@ int main()
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+    // For OpenGL debugging.
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
     GLFWwindow* window = glfwCreateWindow(initialWindowWidth, initialWindowHeight, "Oglre", NULL, NULL);
     if (!window) {
         std::cout << "GLFW Window creation failed\n"
@@ -175,11 +276,25 @@ int main()
     glfwMakeContextCurrent(window);
 
     // A valid OpenGL context must be created before initializing GLEW.
+    // Initialize OpenGL loader (GLEW in this project).
     bool error = glewInit();
     if (error != GLEW_OK) {
         std::cout << "Error: Failed to initialize OpenGL function pointer loader!\n";
     }
-    // Initialize OpenGL loader (GLEW in this project).
+
+    // Enable debugging layer of OpenGL
+    int glFlags = 0;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &glFlags);
+    if (glFlags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+        glDebugMessageCallback(glDebugPrintMessage, nullptr);
+
+        std::cout << ("OpenGL Debug Mode\n");
+    } else {
+        std::cout << "Debug for OpenGL not supported by the system!\n";
+    }
 
     // Printing OpenGL version for convenience.
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
@@ -217,7 +332,7 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-    // Should move these to a struct eventually.
+    // These should be moved to struct eventually...
     const int attributeIndex = 0; // Attribute in this case refers to the position coordinates.
     const int componentCount = 2; // This is the number of floats representing the position coordinates attribute.
     const int stride = 2 * sizeof(float); // Number of bytes between each vertex.
