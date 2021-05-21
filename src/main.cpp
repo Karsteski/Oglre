@@ -18,10 +18,10 @@
 #include <string>
 #include <vector>
 
-// Globals
+// Globa ls
 const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
-std::string shaderPath = "../resources/shaders/Basic.shader";
+std::string shaderPath = "../resources/shaders/Basic.glsl";
 
 // Callback function for printing OpenGL debug statements.
 // Note that OpenGL Debug Output must be enabled to utilize glDebugMessageCallback() and consequently this function.
@@ -346,6 +346,10 @@ int main()
     ShaderProgramSource shaderSource = parseShader(shaderPath);
     unsigned int shader = createShader(shaderSource.vertexSource, shaderSource.fragmentSource);
     glUseProgram(shader);
+
+    // Create and set uniform.
+    int uniformLocation = glGetUniformLocation(shader, "u_Colour");
+    glUniform4f(uniformLocation, 1.0f, 0.0f, 0.0f, 1.0f);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
