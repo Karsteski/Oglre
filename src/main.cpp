@@ -256,11 +256,10 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    // I may just remove these, I can't get anything drawn with them set.
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // For OpenGL debugging.
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
@@ -315,21 +314,26 @@ int main()
         2, 3, 0
     };
 
+    // Vertex Array Buffer
+    unsigned int vao = 0;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     // Main buffer
     // These should be moved to a struct eventually.
     unsigned int buffer = 0;
     const int numberOfBuffers = 1;
-    const int numberOfPoints = 6 * 2;
-    const int numberOfIndices = 6; // Note that indices are the vertices in the postions vector, specifed by 2 points.
+    const int numberOfPoints = 4 * 2;
+    const int numberOfIndices = 6; // Note that indices are the vertices in the postions vector, specifed by 8 points.
 
     glGenBuffers(numberOfBuffers, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, numberOfPoints * sizeof(float), positions.data(), GL_STATIC_DRAW);
 
     // Generate Index Buffer.
-    unsigned int indexBufferObject = 0;
-    glGenBuffers(numberOfBuffers, &indexBufferObject);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+    unsigned int ibo = 0;
+    glGenBuffers(numberOfBuffers, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
     // These should be moved to struct eventually...
@@ -338,6 +342,7 @@ int main()
     const int stride = 2 * sizeof(float); // Number of bytes between each vertex.
     const void* offset = 0; // Long explanation, see: http://docs.gl/gl4/glVertexAttribPointer
 
+    // Link currently bound VBO with the current VAO.
     glVertexAttribPointer(attributeIndex, componentCount, GL_FLOAT, GL_FALSE, stride, offset);
     // Must enable the generic vertex attribute array for the vertex to be drawn.
     glEnableVertexAttribArray(attributeIndex);
@@ -350,7 +355,7 @@ int main()
     // Create and set uniform.
     int uniformLocation = glGetUniformLocation(shader, "u_Colour");
     glUniform4f(uniformLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-
+    
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
