@@ -18,7 +18,9 @@
 #include <string>
 #include <vector>
 
-// Globa ls
+#include "VertexBuffer.h"
+
+// Globals
 const int initialWindowWidth = 800;
 const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.glsl";
@@ -206,7 +208,6 @@ static unsigned int compileShader(unsigned int shaderType, const std::string& so
 
         return 0;
     }
-
     return id;
 }
 
@@ -320,15 +321,11 @@ int main()
     glBindVertexArray(vao);
 
     // Main buffer
-    // These should be moved to a struct eventually.
-    unsigned int buffer = 0;
     const int numberOfBuffers = 1;
     const int numberOfPoints = 4 * 2;
-    const int numberOfIndices = 6; // Note that indices are the vertices in the postions vector, specifed by 8 points.
-
-    glGenBuffers(numberOfBuffers, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, numberOfPoints * sizeof(float), positions.data(), GL_STATIC_DRAW);
+    const int numberOfIndices = 6;
+    VertexBuffer buffer(positions, numberOfPoints * sizeof(float));
+    buffer.Bind();
 
     // Generate Index Buffer.
     unsigned int ibo = 0;
