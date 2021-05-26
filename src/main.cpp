@@ -19,7 +19,10 @@
 #include <vector>
 
 #include "IndexBuffer.h"
+#include "Renderer.h"
+#include "VertexArray.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 // Globals
 const int initialWindowWidth = 800;
@@ -309,36 +312,29 @@ int main()
     };
     // clang-format on
 
-    // Index Buffer
+    // Index Buffer.
     // References the vector of positions necessary to draw two triangles making up a square.
     std::vector<unsigned int> indices {
         0, 1, 2,
         2, 3, 0
     };
 
-    // Vertex Array Buffer
-    unsigned int vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    // Create Vertex Array.
+    VertexArray va;
 
-    // Generate Vertex Buffer
-    const int numberOfPoints = 4 * 2;
-    VertexBuffer vbo(positions, numberOfPoints * sizeof(float));
+    // Generate Vertex Buffer Object.
+    const int nPoints = 4 * 2;
+    VertexBuffer vbo(positions, nPoints * sizeof(float));
+
+    // Create Vertex Buffer Layout.
+    VertexBufferLayout layout;
+    const int nFloatsPerPositionAttribute = 2;
+    layout.Push<float>(nFloatsPerPositionAttribute);
+    va.AddBuffer(vbo, layout);
 
     // Generate Index Buffer.
     const int numberOfIndices = 6;
     IndexBuffer ibo(indices, numberOfIndices);
-
-    // These should be moved to struct eventually...
-    const int attributeIndex = 0; // Attribute in this case refers to the position coordinates.
-    const int componentCount = 2; // This is the number of floats representing the position coordinates attribute.
-    const int stride = 2 * sizeof(float); // Number of bytes between each vertex.
-    const void* offset = 0; // Long explanation, see: http://docs.gl/gl4/glVertexAttribPointer
-
-    // Link currently bound VBO with the current VAO.
-    glVertexAttribPointer(attributeIndex, componentCount, GL_FLOAT, GL_FALSE, stride, offset);
-    // Must enable the generic vertex attribute array for the vertex to be drawn.
-    glEnableVertexAttribArray(attributeIndex);
 
     // Shader creation.
     ShaderProgramSource shaderSource = parseShader(shaderPath);

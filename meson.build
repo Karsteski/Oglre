@@ -13,7 +13,8 @@ src_files = [
     'src/Application/Application.cpp',
     'src/Renderer/VertexBuffer.cpp',
     'src/Renderer/IndexBuffer.cpp',
-    'src/Renderer/VertexArray.cpp'
+    'src/Renderer/VertexArray.cpp',
+    'src/Renderer/Renderer.cpp'
 ]
 
 include_dirs = [
