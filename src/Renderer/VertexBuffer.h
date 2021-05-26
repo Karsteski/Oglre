@@ -9,8 +9,8 @@ public:
     VertexBuffer(const std::vector<float> data, uint32_t size);
     ~VertexBuffer();
 
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    void Unbind() const;
 
 private:
     uint32_t m_RendererID;

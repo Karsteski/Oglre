@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "IndexBuffer.h"
 #include "VertexBuffer.h"
 
 // Globals
@@ -320,18 +321,13 @@ int main()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    // Main buffer
-    const int numberOfBuffers = 1;
+    // Generate Vertex Buffer
     const int numberOfPoints = 4 * 2;
-    const int numberOfIndices = 6;
-    VertexBuffer buffer(positions, numberOfPoints * sizeof(float));
-    buffer.Bind();
+    VertexBuffer vbo(positions, numberOfPoints * sizeof(float));
 
     // Generate Index Buffer.
-    unsigned int ibo = 0;
-    glGenBuffers(numberOfBuffers, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    const int numberOfIndices = 6;
+    IndexBuffer ibo(indices, numberOfIndices);
 
     // These should be moved to struct eventually...
     const int attributeIndex = 0; // Attribute in this case refers to the position coordinates.
