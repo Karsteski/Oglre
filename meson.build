@@ -14,7 +14,8 @@ src_files = [
     'src/Renderer/VertexBuffer.cpp',
     'src/Renderer/IndexBuffer.cpp',
     'src/Renderer/VertexArray.cpp',
-    'src/Renderer/Renderer.cpp'
+    'src/Renderer/Renderer.cpp',
+    'src/Shader/Shader.cpp'
 ]
 
 include_dirs = [
