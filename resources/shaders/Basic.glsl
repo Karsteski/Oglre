@@ -3,9 +3,13 @@
                             
 layout(location = 0) in vec4 position;
 
+// For orthographic matrix
+uniform mat4 u_MVP;
+
 void main()
 {  
-    gl_Position = position;
+    // Note that matrix multiplication is NOT commutative.
+    gl_Position = u_MVP * position;
 };
 
 #shader fragment

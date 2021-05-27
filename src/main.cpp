@@ -1,6 +1,7 @@
 // GLEW loads OpenGL function pointers from the system's graphics drivers.
 // glew.h MUST be included before gl.h
 // clang-format off
+#include "glm/ext/matrix_transform.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
 
@@ -11,7 +12,9 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-// Vendor Libraries
+// Maths Library
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
@@ -30,8 +33,8 @@
 #include "VertexBufferLayout.h"
 
 // Globals
-const int initialWindowWidth = 1280;
-const int initialWindowHeight = 720;
+const int initialWindowWidth = 800;
+const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.glsl";
 
 // Callback function for printing OpenGL debug statements.
@@ -146,6 +149,16 @@ void APIENTRY glDebugPrintMessage(GLenum source, GLenum type, unsigned int id, G
               << sourceMessage << ": " << message << std::endl;
 }
 
+// Move to Oglre namespace w/ other abstracted GLFW setup (Application.cpp)
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    // Ensure viewport matches new window dimensions.
+    glViewport(0, 0, width, height);
+
+    // Should re-render scene after calling glfwSetFramebufferSizeCallback() as current frame
+    // would have been drawn for the old viewport size.
+}
+
 int main()
 {
     // C++ version verification.
@@ -217,12 +230,23 @@ int main()
     // Printing OpenGL version for convenience.
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
 
+    /*
     // clang-format off
     std::vector<float> positions = {
         -0.5f, -0.5f,    
         0.5f, -0.5f,
         0.5f, 0.5f,
         -0.5f, 0.5f,
+    };
+    // clang-format on
+    */
+
+    // clang-format off
+    std::vector<float> positions = {
+        200.0f, 200.0f,    
+        400.0f, 200.0f,
+        400.0f, 400.0f,
+        200.0f, 400.0f
     };
     // clang-format on
 
@@ -258,8 +282,34 @@ int main()
     // Instantiate Renderer.
     Renderer renderer;
 
-    // Main loop
+    // Model View Projection matrices
+
+    // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(100, 100, 0)); // Move "object" 100 units up and right.
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f)); // Move "camera" 100 units right.
+    glm::mat4 orthoProjection;
+    glm::mat4 mvpMatrix;
+    // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
+        // For updating viewport size.
+        int currentWindowWidth = 0;
+        int currentWindowHeight = 0;
+        float aspectRatio = 0;
+
+        // Match viewport size with current window size
+        glfwGetWindowSize(window, &currentWindowWidth, &currentWindowHeight);
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
+
+        // Orthographic projection matrix for use in the Vertex Shader.
+        orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
+
+        // Set MVP matrix once projection matrix has been updated.
+        // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
+        // This affects how the MVP Matrix must be created.
+        mvpMatrix = orthoProjection * view * model;
+        // Now shader can be set.
+        shader.SetUniformMat4f("u_MVP", mvpMatrix);
 
         // Render from this point on.
         renderer.Clear();
