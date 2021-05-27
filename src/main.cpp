@@ -11,7 +11,9 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-// Vendor Libraries
+// Maths Library
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
@@ -30,8 +32,8 @@
 #include "VertexBufferLayout.h"
 
 // Globals
-const int initialWindowWidth = 1280;
-const int initialWindowHeight = 720;
+const int initialWindowWidth = 800;
+const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.glsl";
 
 // Callback function for printing OpenGL debug statements.
@@ -146,6 +148,16 @@ void APIENTRY glDebugPrintMessage(GLenum source, GLenum type, unsigned int id, G
               << sourceMessage << ": " << message << std::endl;
 }
 
+// Move to Oglre namespace w/ other abstracted GLFW setup (Application.cpp)
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    // Ensure viewport matches new window dimensions.
+    glViewport(0, 0, width, height);
+
+    // Should rerender scene after calling glfwSetFramebufferSizeCallback() as current frame
+    // would have been drawn for the old viewport size.
+}
+
 int main()
 {
     // C++ version verification.
@@ -258,8 +270,23 @@ int main()
     // Instantiate Renderer.
     Renderer renderer;
 
-    // Main loop
+    // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+
+        // For updating viewport size.
+        int currentWindowWidth = 0;
+        int currentWindowHeight = 0;
+        float aspectRatio = 0;
+
+        // Match viewport size with current window size
+        glfwGetWindowSize(window, &currentWindowWidth, &currentWindowHeight);
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
+
+        // Orthographic projection matrix for use in the Vertex Shader.
+        glm::mat4 orthoProjection = glm::ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", orthoProjection);
 
         // Render from this point on.
         renderer.Clear();
@@ -270,7 +297,6 @@ int main()
         glfwSwapBuffers(window);
 
         // Poll and process events.
-        glfwPollEvents();
     }
 
     glfwDestroyWindow(window);

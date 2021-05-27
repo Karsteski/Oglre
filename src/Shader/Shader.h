@@ -8,6 +8,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <glm/glm.hpp>
+
 class Shader {
 public:
     Shader(const std::string& filepath);
@@ -17,6 +19,7 @@ public:
     void Unbind() const;
 
     void SetUniform(const std::string& name, float f0, float f1, float f2, float f4);
+    void SetUniformMat4f(const std::string& name, const glm::mat4 matrix);
 
     // Takes care of returning the two strings from parseShader().
     struct ShaderProgramSource {
