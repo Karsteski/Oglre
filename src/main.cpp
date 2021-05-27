@@ -11,6 +11,10 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+// Vendor Libraries
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 #include <array>
 #include <fstream>
 #include <iostream>
