@@ -7,3 +7,4 @@
 # Keep the Wrap DB definitions. 
 !/subprojects/imgui.wrap
 !/subprojects/glm.wrap
+!/subprojects/glew.wrap
