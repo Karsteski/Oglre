@@ -1,6 +1,7 @@
 // GLEW loads OpenGL function pointers from the system's graphics drivers.
 // glew.h MUST be included before gl.h
 // clang-format off
+#include "glm/ext/matrix_transform.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
 
@@ -281,9 +282,15 @@ int main()
     // Instantiate Renderer.
     Renderer renderer;
 
+    // Model View Projection matrices
+
+    // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(100, 100, 0)); // Move "object" 100 units up and right.
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f)); // Move "camera" 100 units right.
+    glm::mat4 orthoProjection;
+    glm::mat4 mvpMatrix;
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
-
         // For updating viewport size.
         int currentWindowWidth = 0;
         int currentWindowHeight = 0;
@@ -295,8 +302,14 @@ int main()
         aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
 
         // Orthographic projection matrix for use in the Vertex Shader.
-        glm::mat4 orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", orthoProjection);
+        orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
+
+        // Set MVP matrix once projection matrix has been updated.
+        // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
+        // This affects how the MVP Matrix must be created.
+        mvpMatrix = orthoProjection * view * model;
+        // Now shader can be set.
+        shader.SetUniformMat4f("u_MVP", mvpMatrix);
 
         // Render from this point on.
         renderer.Clear();
