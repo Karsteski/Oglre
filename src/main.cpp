@@ -178,7 +178,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // GLFW Window settings
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
     // For OpenGL debugging.
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
