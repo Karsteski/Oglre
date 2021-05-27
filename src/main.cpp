@@ -154,7 +154,7 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     // Ensure viewport matches new window dimensions.
     glViewport(0, 0, width, height);
 
-    // Should rerender scene after calling glfwSetFramebufferSizeCallback() as current frame
+    // Should re-render scene after calling glfwSetFramebufferSizeCallback() as current frame
     // would have been drawn for the old viewport size.
 }
 
@@ -229,12 +229,23 @@ int main()
     // Printing OpenGL version for convenience.
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
 
+    /*
     // clang-format off
     std::vector<float> positions = {
         -0.5f, -0.5f,    
         0.5f, -0.5f,
         0.5f, 0.5f,
         -0.5f, 0.5f,
+    };
+    // clang-format on
+    */
+
+    // clang-format off
+    std::vector<float> positions = {
+        200.0f, 200.0f,    
+        400.0f, 200.0f,
+        400.0f, 400.0f,
+        200.0f, 400.0f
     };
     // clang-format on
 
@@ -272,7 +283,6 @@ int main()
 
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
 
         // For updating viewport size.
         int currentWindowWidth = 0;
@@ -285,7 +295,7 @@ int main()
         aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
 
         // Orthographic projection matrix for use in the Vertex Shader.
-        glm::mat4 orthoProjection = glm::ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+        glm::mat4 orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
         shader.SetUniformMat4f("u_MVP", orthoProjection);
 
         // Render from this point on.
@@ -297,6 +307,7 @@ int main()
         glfwSwapBuffers(window);
 
         // Poll and process events.
+        glfwPollEvents();
     }
 
     glfwDestroyWindow(window);
