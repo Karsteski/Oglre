@@ -8,8 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "Renderer.h"
-
 class Shader {
 public:
     Shader(const std::string& filepath);

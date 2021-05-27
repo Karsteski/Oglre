@@ -10,3 +10,16 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 // clang-format on
+
+#include "IndexBuffer.h"
+#include "Shader.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
+
+// Renderer is "static" such that only one instantiation of the members and methods is possible.
+class Renderer {
+public:
+    static void Clear();
+    static void Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader& shader);
+};

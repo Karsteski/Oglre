@@ -26,8 +26,8 @@
 #include "VertexBufferLayout.h"
 
 // Globals
-const int initialWindowWidth = 800;
-const int initialWindowHeight = 600;
+const int initialWindowWidth = 1280;
+const int initialWindowHeight = 720;
 std::string shaderPath = "../resources/shaders/Basic.glsl";
 
 // Callback function for printing OpenGL debug statements.
@@ -167,10 +167,14 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    // OpenGL version and mode setup.
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    // GLFW Window settings
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // For OpenGL debugging.
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
@@ -247,14 +251,15 @@ int main()
     shader.Bind();
     shader.SetUniform("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
 
+    // Instantiate Renderer.
+    Renderer renderer;
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
         // Render from this point on.
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Index Buffer is already bound, and so the pointer to the IB location can just be nullptr.
-        glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
+        renderer.Clear();
+        renderer.Draw(va, ibo, shader);
 
         // Swaps the front and back buffers of the specified window.
         // The front buffer is the current buffer shown on screen, whilst the back is the data to be drawn to.
