@@ -19,6 +19,11 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+// DearImGUI
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <array>
 #include <fstream>
 #include <iostream>
@@ -282,7 +287,7 @@ int main()
     // Deal with vertex and fragment shader.
     Shader shader(shaderPath);
     shader.Bind();
-    shader.SetUniform("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
+    shader.SetUniform("u_Colour", 1.0f, 1.0f, 1.0f, 1.0f);
 
     // Instantiate Renderer.
     Renderer renderer;
@@ -296,13 +301,81 @@ int main()
     glm::mat4 perspectiveProjection;
     glm::mat4 mvpMatrix;
 
+    /*
     glm::mat4 view = glm::lookAt(
         glm::vec3(200.0f, 200.0f, 200.0f),
         glm::vec3(150.0f, 150.0f, 100.0f),
         glm::vec3(0.0f, 1.0f, 0.0f));
+    */
+
+    /*
+    float camLocX = 200.0f;
+    float camLocY = 200.0f;
+    float camLocZ = 200.0f;
+
+    float camViewX = 150.0f;
+    float camViewY = 150.0f;
+    float camViewZ = 100.0f;
+    */
+
+    glm::vec3 cameraPositionVector = glm::vec3(200.0f, 200.0f, 200.0f);
+    glm::vec3 cameraViewVector = glm::vec3(150.0f, 150.0f, 100.0f);
+
+    // DearImGUI things
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer backends
+    std::string glsl_version = "#version 330";
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
+
+        // DearImGUI things
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        //bool show_demo_window = true;
+        //ImGui::ShowDemoWindow(&show_demo_window);
+
+        // Mess :D
+        glm::mat4 view = glm::lookAt(
+            cameraPositionVector,
+            cameraViewVector,
+            glm::vec3(0.0f, 1.0f, 0.0f));
+
+        // Basic Camera controls through DearImGUI
+        {
+            ImGui::Begin("Camera Controls");
+
+            ImGui::SliderFloat3("Camera Position", &cameraPositionVector[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera View", &cameraViewVector[0], 0.0f, 1000.0f);
+
+            if (ImGui::Button("Reset Camera")) {
+                cameraPositionVector = glm::vec3(200.0f, 200.0f, 200.0f);
+                cameraViewVector = glm::vec3(150.0f, 150.0f, 100.0f);
+            }
+
+            static bool wireframeMode = false;
+            ImGui::Checkbox("Enable Wireframe Mode", &wireframeMode);
+            if (wireframeMode)
+                renderer.EnableWireFrameMode(true);
+            else
+                renderer.EnableWireFrameMode(false);
+
+            ImGui::End();
+        }
+
         // For updating viewport size.
         int currentWindowWidth = 0;
         int currentWindowHeight = 0;
@@ -328,6 +401,10 @@ int main()
         renderer.Clear();
         renderer.Draw(va, ibo, shader);
 
+        // DearImGUI things
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         // Swaps the front and back buffers of the specified window.
         // The front buffer is the current buffer shown on screen, whilst the back is the data to be drawn to.
         glfwSwapBuffers(window);
@@ -335,6 +412,11 @@ int main()
         // Poll and process events.
         glfwPollEvents();
     }
+
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwDestroyWindow(window);
     glfwTerminate();

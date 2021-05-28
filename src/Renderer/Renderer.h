@@ -21,5 +21,8 @@
 class Renderer {
 public:
     static void Clear();
-    static void Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader& shader);
+    void Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader& shader);
+    void EnableWireFrameMode(bool enable);
+private:
+    bool m_enableWireFrameMode;
 };

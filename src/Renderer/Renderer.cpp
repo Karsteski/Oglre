@@ -14,15 +14,22 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader&
     // Enable Depth Testing. Prevents occluded triangles from being drawn.
     glEnable(GL_DEPTH_TEST);
 
-    // Enable wireframe mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // Enable default fill mode.
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // Wireframe mode
+    if (m_enableWireFrameMode) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        // Enable default fill mode.
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     // Index Buffer is already bound, and so the pointer to the IB location can just be nullptr.
     glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr);
 
     // Not using Unbind()s at the moment, unnecessary for OpenGL.
     // Normally just a waste of performance.
+}
+
+void Renderer::EnableWireFrameMode(bool enable)
+{
+    m_enableWireFrameMode = enable;
 }
