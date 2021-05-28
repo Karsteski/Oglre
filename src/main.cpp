@@ -292,7 +292,7 @@ int main()
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // Move "object" 100 units up and right.
     //glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 200.0f, 200.0f)); // Move "camera" 100 units right.
-    //glm::mat4 orthoProjection;
+    glm::mat4 orthoProjection;
     glm::mat4 perspectiveProjection;
     glm::mat4 mvpMatrix;
 
