@@ -1,6 +1,7 @@
 // GLEW loads OpenGL function pointers from the system's graphics drivers.
 // glew.h MUST be included before gl.h
 // clang-format off
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -230,48 +231,52 @@ int main()
     // Printing OpenGL version for convenience.
     std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
 
-    /*
     // clang-format off
+    // Cube positions.
     std::vector<float> positions = {
-        -0.5f, -0.5f,    
-        0.5f, -0.5f,
-        0.5f, 0.5f,
-        -0.5f, 0.5f,
+        100.0f, 100.0f, 100.0f,     // 0
+        -100.0f, 100.0f, 100.0f,    // 1
+        -100.0f, 100.0f, -100.0f,   // 2
+        100.0f, 100.0f, -100.0f,    // 3
+        100.0f, -100.0f, 100.0f,    // 4
+        -100.0f, -100.0f, 100.0f,   // 5
+        -100.0f, -100.0f, -100.0f,  // 6
+        100.0f, -100.0f, -100.0f    // 7
     };
-    // clang-format on
-    */
-
-    // clang-format off
-    std::vector<float> positions = {
-        200.0f, 200.0f,    
-        400.0f, 200.0f,
-        400.0f, 400.0f,
-        200.0f, 400.0f
-    };
-    // clang-format on
 
     // Index Buffer.
-    // References the vector of positions necessary to draw two triangles making up a square.
+    // References the vector of positions necessary to draw 12 triangles making up a cube.
     std::vector<unsigned int> indices {
-        0, 1, 2,
-        2, 3, 0
+        0, 1, 3, // top 1
+        3, 1, 2, // top 2
+        2, 6, 7, // front 1
+        7, 3, 2, // front 2
+        7, 6, 5, // bottom 1
+        5, 4, 7, // bottom 2
+        5, 1, 4, // back 1
+        4, 1, 0, // back 2
+        4, 3, 7, // right 1
+        3, 4, 0, // right 2
+        5, 6, 2, // left 1
+        5, 1, 2  // left 2
     };
+    // clang-format on
 
     // Create Vertex Array.
     VertexArray va;
 
     // Generate Vertex Buffer Object.
-    const int nPoints = 4 * 2;
+    const int nPoints = 3 * 8;
     VertexBuffer vbo(positions, nPoints * sizeof(float));
 
     // Create Vertex Buffer Layout.
     VertexBufferLayout layout;
-    const int nFloatsPerPositionAttribute = 2;
+    const int nFloatsPerPositionAttribute = 3;
     layout.Push<float>(nFloatsPerPositionAttribute);
     va.AddBuffer(vbo, layout);
 
     // Generate Index Buffer.
-    const int numberOfIndices = 6;
+    const int numberOfIndices = 3 * 12;
     IndexBuffer ibo(indices, numberOfIndices);
 
     // Deal with vertex and fragment shader.
@@ -285,10 +290,17 @@ int main()
     // Model View Projection matrices
 
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(100, 100, 0)); // Move "object" 100 units up and right.
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f)); // Move "camera" 100 units right.
-    glm::mat4 orthoProjection;
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // Move "object" 100 units up and right.
+    //glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 200.0f, 200.0f)); // Move "camera" 100 units right.
+    //glm::mat4 orthoProjection;
+    glm::mat4 perspectiveProjection;
     glm::mat4 mvpMatrix;
+
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(200.0f, 200.0f, 200.0f),
+        glm::vec3(150.0f, 150.0f, 100.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
         // For updating viewport size.
@@ -302,12 +314,13 @@ int main()
         aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
 
         // Orthographic projection matrix for use in the Vertex Shader.
-        orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
-
+        //orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
+        perspectiveProjection = glm::perspective(90.0f, (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
         // Set MVP matrix once projection matrix has been updated.
         // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
         // This affects how the MVP Matrix must be created.
-        mvpMatrix = orthoProjection * view * model;
+        //mvpMatrix = orthoProjection * view * model;
+        mvpMatrix = perspectiveProjection * view * model;
         // Now shader can be set.
         shader.SetUniformMat4f("u_MVP", mvpMatrix);
 

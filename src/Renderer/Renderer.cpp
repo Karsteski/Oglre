@@ -2,7 +2,7 @@
 
 void Renderer::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader& shader)
@@ -10,6 +10,9 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader&
     shader.Bind();
     va.Bind();
     ibo.Bind();
+
+    // Enable Depth Testing. Prevents occluded triangles from being drawn.
+    glEnable(GL_DEPTH_TEST);
 
     // Index Buffer is already bound, and so the pointer to the IB location can just be nullptr.
     glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr);
