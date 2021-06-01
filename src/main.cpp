@@ -239,6 +239,7 @@ int main()
     // clang-format off
     // Cube positions.
     std::vector<float> vertices = {
+        // Positions                // Colours
         100.0f, 100.0f, 100.0f,     1.0f, 0.0f, 0.0f, // 0
         -100.0f, 100.0f, 100.0f,    0.0f, 1.0f, 0.0f, // 1
         -100.0f, 100.0f, -100.0f,   0.0f, 0.0f, 1.0f, // 2
