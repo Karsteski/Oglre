@@ -1,7 +1,7 @@
 #shader vertex
 #version 330 core
                             
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec3  position;
 layout(location = 1) in vec3 vertexInputColour;
 
 out vec3 vertexOutputColour;
@@ -11,8 +11,9 @@ uniform mat4 u_MVP;
 
 void main()
 {  
+    vec4 pos4 = vec4(position, 1.0);
     // Note that matrix multiplication is NOT commutative.
-    gl_Position = u_MVP * position;
+    gl_Position = u_MVP * pos4;
 
     vertexOutputColour = vertexInputColour;
 };

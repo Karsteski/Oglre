@@ -27,18 +27,19 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
     uint32_t colourOffset = 3 * sizeof(float);
 
 
+    // TODO: Need to add support for multiple Vertex Array Objects.
     for (uint32_t index = 0; index < elements.size(); ++index) {
         const auto& element = elements[index];
 
         // Vertex position attribute.
         // Note the necessary void* cast due to the OpenGL API.
-        glVertexAttribPointer(index, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset);
+        glVertexAttribPointer(0, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset);
         // Must enable the generic vertex attribute array for the vertex to be drawn.
-        glEnableVertexAttribArray(index);
+        glEnableVertexAttribArray(0);
 
         // Vertex colour attribute.
-        glVertexAttribPointer(index, element.count, element.type, element.normalized, layout.GetStride(), (void*)colourOffset);
-        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(1, element.count, element.type, element.normalized, layout.GetStride(), (void*)colourOffset);
+        glEnableVertexAttribArray(1);
 
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
         colourOffset += element.count * VertexBufferElement::GetSizeOfType(element.type);
