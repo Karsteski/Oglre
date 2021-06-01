@@ -24,6 +24,9 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
     const auto& elements = layout.GetElements();
 
     uint32_t offset = 0;
+    uint32_t colourOffset = 3 * sizeof(float);
+
+
     for (uint32_t index = 0; index < elements.size(); ++index) {
         const auto& element = elements[index];
 
@@ -32,7 +35,11 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
         // Must enable the generic vertex attribute array for the vertex to be drawn.
         glEnableVertexAttribArray(index);
 
+        glVertexAttribPointer(index, element.count, element.type, element.normalized, layout.GetStride(), (void*)colourOffset);
+        glEnableVertexAttribArray(index);
+
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
+        colourOffset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
 }
 

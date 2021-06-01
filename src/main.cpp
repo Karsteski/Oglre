@@ -238,15 +238,15 @@ int main()
 
     // clang-format off
     // Cube positions.
-    std::vector<float> positions = {
-        100.0f, 100.0f, 100.0f,     // 0
-        -100.0f, 100.0f, 100.0f,    // 1
-        -100.0f, 100.0f, -100.0f,   // 2
-        100.0f, 100.0f, -100.0f,    // 3
-        100.0f, -100.0f, 100.0f,    // 4
-        -100.0f, -100.0f, 100.0f,   // 5
-        -100.0f, -100.0f, -100.0f,  // 6
-        100.0f, -100.0f, -100.0f    // 7
+    std::vector<float> vertices = {
+        100.0f, 100.0f, 100.0f,     1.0f, 0.0f, 0.0f, // 0
+        -100.0f, 100.0f, 100.0f,    0.0f, 1.0f, 0.0f, // 1
+        -100.0f, 100.0f, -100.0f,   0.0f, 0.0f, 1.0f, // 2
+        100.0f, 100.0f, -100.0f,    1.0f, 0.0f, 0.0f, // 3
+        100.0f, -100.0f, 100.0f,    0.0f, 1.0f, 0.0f, // 4
+        -100.0f, -100.0f, 100.0f,   0.0f, 0.0f, 1.0f, // 5
+        -100.0f, -100.0f, -100.0f,  1.0f, 0.0f, 0.0f, // 6
+        100.0f, -100.0f, -100.0f,   0.0f, 1.0f, 0.0f  // 7
     };
 
     // Index Buffer.
@@ -271,13 +271,14 @@ int main()
     VertexArray va;
 
     // Generate Vertex Buffer Object.
-    const int nPoints = 3 * 8;
-    VertexBuffer vbo(positions, nPoints * sizeof(float));
+    const int nPoints = 6 * 8;
+    VertexBuffer vbo(vertices, nPoints * sizeof(float));
 
     // Create Vertex Buffer Layout.
     VertexBufferLayout layout;
-    const int nFloatsPerPositionAttribute = 3;
-    layout.Push<float>(nFloatsPerPositionAttribute);
+    const int nFloatsPerVertexAttribute = 3;
+    layout.Push<float>(nFloatsPerVertexAttribute);
+    layout.Push<float>(nFloatsPerVertexAttribute);
     va.AddBuffer(vbo, layout);
 
     // Generate Index Buffer.
@@ -287,7 +288,7 @@ int main()
     // Deal with vertex and fragment shader.
     Shader shader(shaderPath);
     shader.Bind();
-    shader.SetUniform("u_Colour", 1.0f, 1.0f, 1.0f, 1.0f);
+    // shader.SetUniform("u_Colour", 1.0f, 1.0f, 1.0f, 1.0f);
 
     // Instantiate Renderer.
     Renderer renderer;
@@ -297,7 +298,7 @@ int main()
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // Move "object" 100 units up and right.
     //glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 200.0f, 200.0f)); // Move "camera" 100 units right.
-    glm::mat4 orthoProjection;
+    // glm::mat4 orthoProjection;
     glm::mat4 perspectiveProjection;
     glm::mat4 mvpMatrix;
 

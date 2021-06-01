@@ -61,19 +61,19 @@ template <>
 inline void VertexBufferLayout::Push<float>(uint32_t count)
 {
     m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
-    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
+    m_Stride = count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
 }
 
 template <>
 inline void VertexBufferLayout::Push<uint32_t>(uint32_t count)
 {
     m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
+    m_Stride = count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
 }
 
 template <>
 inline void VertexBufferLayout::Push<unsigned char>(uint32_t count)
 {
     m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
+    m_Stride = count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
 }
