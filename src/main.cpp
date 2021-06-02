@@ -243,11 +243,11 @@ int main()
         100.0f, 100.0f, 100.0f,     1.0f, 0.0f, 0.0f, // 0
         -100.0f, 100.0f, 100.0f,    0.0f, 1.0f, 0.0f, // 1
         -100.0f, 100.0f, -100.0f,   0.0f, 0.0f, 1.0f, // 2
-        100.0f, 100.0f, -100.0f,    1.0f, 0.0f, 0.0f, // 3
-        100.0f, -100.0f, 100.0f,    0.0f, 1.0f, 0.0f, // 4
-        -100.0f, -100.0f, 100.0f,   0.0f, 0.0f, 1.0f, // 5
-        -100.0f, -100.0f, -100.0f,  1.0f, 0.0f, 0.0f, // 6
-        100.0f, -100.0f, -100.0f,   0.0f, 1.0f, 0.0f  // 7
+        100.0f, 100.0f, -100.0f,    1.0f, 1.0f, 1.0f, // 3
+        100.0f, -100.0f, 100.0f,    1.0f, 0.0f, 0.0f, // 4
+        -100.0f, -100.0f, 100.0f,   0.0f, 1.0f, 0.0f, // 5
+        -100.0f, -100.0f, -100.0f,  0.0f, 0.0f, 1.0f, // 6
+        100.0f, -100.0f, -100.0f,   1.0f, 1.0f, 1.0f  // 7
     };
 
     // Index Buffer.
@@ -272,12 +272,14 @@ int main()
     VertexArray va;
 
     // Generate Vertex Buffer Object.
-    const int nPoints = 6 * 8;
+    const int nPoints = 3 * 2 * 8;
     VertexBuffer vbo(vertices, nPoints * sizeof(float));
 
     // Create Vertex Buffer Layout.
     VertexBufferLayout layout;
     const int nFloatsPerVertexAttribute = 3;
+
+    // One Push for each vertex attribute.
     layout.Push<float>(nFloatsPerVertexAttribute);
     layout.Push<float>(nFloatsPerVertexAttribute);
     va.AddBuffer(vbo, layout);

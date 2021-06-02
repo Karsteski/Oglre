@@ -24,10 +24,10 @@ void main()
 // layout(location = 0) out vec4 colour;
 // uniform vec4 u_Colour;
 
-in vec3 vertexInputColour;      
+in vec3 vertexOutputColour;      
 out vec4 fragmentColour;
 
 void main()
 {  
-    fragmentColour = vec4(vertexInputColour, 1.0);
+    fragmentColour = vec4(vertexOutputColour, 1.0);
 };
