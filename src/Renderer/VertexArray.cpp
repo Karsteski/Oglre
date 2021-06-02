@@ -24,10 +24,13 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
     const auto& elements = layout.GetElements();
 
     uint32_t offset = 0;
+    
+    // Loop through vertex attributes.
     for (uint32_t index = 0; index < elements.size(); ++index) {
         const auto& element = elements[index];
 
-        // Note the necessary void* cast due to the OpenGL API
+        // Vertex Attribute
+        // Note the necessary void* cast due to the OpenGL API.
         glVertexAttribPointer(index, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset);
         // Must enable the generic vertex attribute array for the vertex to be drawn.
         glEnableVertexAttribArray(index);
