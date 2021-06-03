@@ -179,7 +179,7 @@ float lastFrameTime = 0.0f;
 // Manage GLFW's keyboard input
 void processInput(GLFWwindow* window)
 {
-    const float cameraSpeed = 100.0f * deltaTime;
+    const float cameraSpeed = 1000.0f * deltaTime;
 
     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -193,6 +193,12 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPosition += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        cameraPosition += cameraSpeed * cameraUp;
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        cameraPosition -= cameraSpeed * cameraUp;
     }
 }
 
