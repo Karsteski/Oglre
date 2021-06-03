@@ -6,6 +6,7 @@
 #include "glm/geometric.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <math.h>
 
 // Disables inclusion of the dev-environ header.
 // Allows GLFW + extension loader headers to be included in any order.
@@ -26,6 +27,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include <array>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -176,8 +178,24 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f;
 float lastFrameTime = 0.0f;
 
+// Globals for mouse movement trigonometry calculation.
+// TODO: This all needs to be in camera class.
+static bool isRightMouseButtonPressed = false;
+static bool isFirstMouseInput = true;
+
+float pitch = 0.0f;
+float yaw = -90.0f; // Set to this value to ensure camera points into the screen i.e. negative z-axis
+
+// For mouse movement
+// Store last mouse positions in the application, initialized to the center of the screen.
+float lastXPosition = initialWindowWidth / 2.0f;
+float lastYPosition = initialWindowHeight / 2.0f;
+
+// Definites and allows changes to the viewport FOV (i.e. zooming in/out)
+float mouseZoom = 90.0f;
+
 // Manage GLFW's keyboard input
-void processInput(GLFWwindow* window)
+void processKeyboardInput(GLFWwindow* window)
 {
     const float cameraSpeed = 1000.0f * deltaTime;
 
@@ -202,6 +220,88 @@ void processInput(GLFWwindow* window)
     }
 }
 
+// Listen for mouse-movement events
+void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
+{
+    // Check to see if this is the first time receiving mouse input.
+    if (isFirstMouseInput) {
+        lastXPosition = xPosition;
+        lastYPosition = yPosition;
+        isFirstMouseInput = false;
+    }
+
+    float xPositionOffset = xPosition - lastXPosition;
+    float yPositionOffset = yPosition - lastYPosition;
+
+    lastXPosition = xPosition;
+    lastYPosition = yPosition;
+
+    const float sensitivity = 1.0f;
+    xPositionOffset *= sensitivity;
+    yPositionOffset *= sensitivity;
+
+    yaw += xPositionOffset;
+    pitch += yPositionOffset;
+
+    // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    // Create camera direction vector using Euler angles.
+    glm::vec3 cameraDirection;
+
+    // Must convert to radians first.
+    // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
+    cameraDirection.x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+    cameraDirection.y = sin(glm::radians(pitch));
+    cameraDirection.z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+
+    // Calculate direction vector if mouse is pressed.
+    if (isRightMouseButtonPressed) {
+        cameraFront = glm::normalize(cameraDirection);
+    }
+}
+
+// Listen for mouse button presses.
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+        // Enable camera movement with mouse.
+        isRightMouseButtonPressed = true;
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+
+        // Disable camera movement with mouse.
+        isRightMouseButtonPressed = false;
+    }
+}
+
+// Listen for mouse scroll wheel.
+void mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset)
+{
+    mouseZoom -= static_cast<float>(yPositionOffset);
+
+    // Constrain zoom values
+    if (mouseZoom < 1.0f) {
+        mouseZoom = 1.0f;
+    }
+    if (mouseZoom > 90.0f) {
+        mouseZoom = 90.0f;
+    }
+}
+
+// Manage GLFW's mouse input
+void processMouseInput(GLFWwindow* window)
+{
+}
 int main()
 {
     // C++ version verification.
@@ -409,10 +509,16 @@ int main()
         aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
 
         // Process keyboard commands.
-        processInput(window);
+        processKeyboardInput(window);
+
+        // Process mouse input and movement.
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetCursorPosCallback(window, mouseMovementCallback);
+        glfwSetScrollCallback(window, mouseScrollWheelCallback);
+
         // Orthographic projection matrix for use in the Vertex Shader.
         //orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
-        perspectiveProjection = glm::perspective(90.0f, (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
+        perspectiveProjection = glm::perspective(glm::radians(mouseZoom), (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
         // Set MVP matrix once projection matrix has been updated.
         // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
         // This affects how the MVP Matrix must be created.
