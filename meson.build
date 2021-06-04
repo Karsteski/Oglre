@@ -16,13 +16,15 @@ src_files = [
     'src/Renderer/IndexBuffer.cpp',
     'src/Renderer/VertexArray.cpp',
     'src/Renderer/Renderer.cpp',
-    'src/Shader/Shader.cpp'
+    'src/Shader/Shader.cpp',
+    'src/Camera/Camera.cpp'
 ]
 
 include_dirs = [
     'src/Application',
     'src/Renderer',
-    'src/Shader'
+    'src/Shader',
+    'src/Camera'
 ]
 
 executable('oglre',

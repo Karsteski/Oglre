@@ -6,7 +6,6 @@
 #include "glm/geometric.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <math.h>
 
 // Disables inclusion of the dev-environ header.
 // Allows GLFW + extension loader headers to be included in any order.
@@ -298,10 +297,6 @@ void mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double
     }
 }
 
-// Manage GLFW's mouse input
-void processMouseInput(GLFWwindow* window)
-{
-}
 int main()
 {
     // C++ version verification.
