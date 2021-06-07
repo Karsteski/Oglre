@@ -2,12 +2,9 @@
 
 #include <cstdint>
 #include <vector>
-
+namespace Oglre {
 // Handles creation, binding, data storage and deletion of an Index Buffer Object.
 class IndexBuffer {
-private:
-    uint32_t m_RendererID;
-    uint32_t m_Count;
 
 public:
     IndexBuffer(const std::vector<uint32_t> data, uint32_t count);
@@ -20,4 +17,9 @@ public:
     {
         return m_Count;
     }
+
+private:
+    uint32_t m_RendererID;
+    uint32_t m_Count;
 };
+}

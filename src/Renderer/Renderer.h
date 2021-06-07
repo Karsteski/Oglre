@@ -17,12 +17,11 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
-// Renderer is "static" such that only one instantiation of the members and methods is possible.
 class Renderer {
 public:
     static void Clear();
-    void Draw(const VertexArray& va, const IndexBuffer& ibo, const Shader& shader);
-    void EnableWireFrameMode(bool enable);
+    static void Draw(const Oglre::VertexArray& va, const Oglre::IndexBuffer& ibo, const Shader& shader);
+    static void EnableWireFrameMode(bool enable);
 private:
-    bool m_enableWireFrameMode;
+    static inline bool m_enableWireFrameMode = false;
 };

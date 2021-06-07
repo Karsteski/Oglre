@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-
+namespace Oglre {
 // Handles creation, binding, data storage and deletion of a Vertex Buffer Object.
 class VertexBuffer {
 public:
@@ -15,3 +15,4 @@ public:
 private:
     uint32_t m_RendererID;
 };
+}

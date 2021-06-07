@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <cstddef>
 #include <vector>
-
+namespace Oglre {
 struct VertexBufferElement {
     uint32_t type;
     uint32_t count;
@@ -76,4 +76,5 @@ inline void VertexBufferLayout::Push<unsigned char>(uint32_t count)
 {
     m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
     m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
+}
 }

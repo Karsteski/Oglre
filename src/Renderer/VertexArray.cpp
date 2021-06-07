@@ -3,16 +3,16 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 
-VertexArray::VertexArray()
+Oglre::VertexArray::VertexArray()
 {
     glGenVertexArrays(1, &m_RendererID);
 }
-VertexArray::~VertexArray()
+Oglre::VertexArray::~VertexArray()
 {
     glDeleteVertexArrays(1, &m_RendererID);
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
+void Oglre::VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
 {
     // First bind Vertex Array.
     Bind();
@@ -39,12 +39,12 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
     }
 }
 
-void VertexArray::Bind() const
+void Oglre::VertexArray::Bind() const
 {
     glBindVertexArray(m_RendererID);
 }
 
-void VertexArray::Unbind() const
+void Oglre::VertexArray::Unbind() const
 {
     glBindVertexArray(0);
 }

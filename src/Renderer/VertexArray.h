@@ -4,7 +4,7 @@
 
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
-
+namespace Oglre {
 class VertexArray {
 public:
     VertexArray();
@@ -19,3 +19,4 @@ public:
 private:
     uint32_t m_RendererID;
 };
+}

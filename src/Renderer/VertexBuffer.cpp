@@ -1,7 +1,7 @@
 #include "VertexBuffer.h"
 #include <GL/glew.h>
 
-VertexBuffer::VertexBuffer(const std::vector<float> data, uint32_t size)
+Oglre::VertexBuffer::VertexBuffer(const std::vector<float> data, uint32_t size)
 {
     const int numberOfBuffers = 1;
 
@@ -10,17 +10,17 @@ VertexBuffer::VertexBuffer(const std::vector<float> data, uint32_t size)
     glBufferData(GL_ARRAY_BUFFER, size, data.data(), GL_STATIC_DRAW);
 }
 
-VertexBuffer::~VertexBuffer()
+Oglre::VertexBuffer::~VertexBuffer()
 {
     glDeleteBuffers(1, &m_RendererID);
 }
 
-void VertexBuffer::Bind() const
+void Oglre::VertexBuffer::Bind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 }
 
-void VertexBuffer::Unbind() const
+void Oglre::VertexBuffer::Unbind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

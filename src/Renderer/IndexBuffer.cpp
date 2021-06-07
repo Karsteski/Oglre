@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <cstdint>
 
-IndexBuffer::IndexBuffer(const std::vector<uint32_t> data, uint32_t count)
+Oglre::IndexBuffer::IndexBuffer(const std::vector<uint32_t> data, uint32_t count)
     : m_Count(count)
 {
     const int numberOfBuffers = 1;
@@ -12,17 +12,17 @@ IndexBuffer::IndexBuffer(const std::vector<uint32_t> data, uint32_t count)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), data.data(), GL_STATIC_DRAW);
 }
 
-IndexBuffer::~IndexBuffer()
+Oglre::IndexBuffer::~IndexBuffer()
 {
     glDeleteBuffers(1, &m_RendererID);
 }
 
-void IndexBuffer::Bind() const
+void Oglre::IndexBuffer::Bind() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 }
 
-void IndexBuffer::Unbind() const
+void Oglre::IndexBuffer::Unbind() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
