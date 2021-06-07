@@ -1,29 +1,33 @@
 #pragma once
 
-#include "Camera.h"
+// GLEW loads OpenGL function pointers from the system's graphics drivers.
+// glew.h MUST be included before gl.h
+// clang-format off
+#include <GL/glew.h>
+#include <GL/gl.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+// clang-format on
 
-#include "glm/vec2.hpp"
+#include "Camera.h"
 namespace Oglre {
 
-//
 // -----------------------
 // Application Information
 // -----------------------
 
 class Application {
 public:
+    // --------------------------------
+    // Input Handling + Camera Movement
+    // --------------------------------
+
     static int initialWindowWidth;
     static int initialWindowHeight;
     static glm::vec2 lastMousePosition;
-
-    // ---------------
-    // Camera Movement
-    // ---------------
-
     static Camera camera;
+
     static void processKeyboardInput(GLFWwindow* window); // Manage GLFW's keyboard input
     static void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition); // Listen for mouse-movement events
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods); // Listen for mouse button presses.
@@ -32,7 +36,20 @@ public:
     static bool IsFirstMouseInput(); // Check if mouse input has been received for the first time.
     static bool MouseButtonPressed(); // Check if right mouse button is being pressed.
     static float GetDeltaTime(); // Get frametime, i.e. the time taken to render a frame.
-    static glm::vec2 GetLastMousePosition();
+
+    // ----------------------
+    // OpenGL Error Functions
+    // ----------------------
+
+    // Callback function for printing OpenGL debug statements.
+    // Note that OpenGL Debug Output must be enabled to utilize glDebugMessageCallback() and consequently this function.
+    static void APIENTRY glDebugPrintMessage(GLenum source, GLenum type, unsigned int id, GLenum severity, int length, const char* message, const void* data);
+
+    // ---------------------------
+    // Display Related Information
+    // ---------------------------
+
+    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 private:
     static inline bool m_isFirstMouseInput = true;
