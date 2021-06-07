@@ -21,7 +21,6 @@ bool Oglre::Camera::constrainMovement(false);
 
 Oglre::Camera::Camera()
 {
-
     updateCameraVectors();
 }
 
@@ -39,21 +38,27 @@ void Oglre::Camera::KeyboardInput(CameraMovements movement, float deltaTime)
         switch (movement) {
         case CameraMovements::FORWARD: {
             cameraPosition += cameraVelocity * cameraFront;
+            break;
         }
         case CameraMovements::BACKWARD: {
             cameraPosition -= cameraVelocity * cameraFront;
+            break;
         }
         case CameraMovements::LEFT: {
             cameraPosition -= cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+            break;
         }
         case CameraMovements::RIGHT: {
             cameraPosition += cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+            break;
         }
         case CameraMovements::UP: {
             cameraPosition += cameraVelocity * cameraUp;
+            break;
         }
         case CameraMovements::DOWN: {
             cameraPosition -= cameraVelocity * cameraUp;
+            break;
         }
         }
     }

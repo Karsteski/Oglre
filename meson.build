@@ -1,7 +1,9 @@
-project('oglre','cpp', version : '0.1.0')
+project('oglre','cpp', version : '0.1.0', default_options : ['-cpp_std=c++14', '-warning_level=3'])
 
-# Not the Mesonic way to do this, but default_options : cpp_std=c++17 isn't working for some reason.
-add_global_arguments('-std=c++17', language : 'cpp')
+# Print relevant options.
+message('C++ Version = ' + get_option('cpp_std'))
+message('Warning level = ' + get_option('warning_level'))
+message('Build type = ' + get_option('buildtype'))
 
 glew_dep = dependency('glew', fallback : ['glew', 'glew_dep'])
 glfw_dep = dependency('glfw3')
