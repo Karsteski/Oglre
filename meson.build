@@ -1,4 +1,4 @@
-project('oglre','cpp', version : '0.1.0', default_options : ['-cpp_std=c++14', '-warning_level=3'])
+project('oglre','cpp', version : '0.1.0', default_options : ['-cpp_std=c++17', '-warning_level=3'])
 
 # Print relevant options.
 message('C++ Version = ' + get_option('cpp_std'))
@@ -12,7 +12,7 @@ imgui_dep = dependency('imgui', fallback : ['imgui', 'imgui_dep'])
 glm_dep = dependency('glm', fallback: ['glm', 'glm_dep'])
 
 src_files = [
-    'src/main.cpp',
+    'src/Main.cpp',
     'src/Application/Application.cpp',
     'src/Renderer/VertexBuffer.cpp',
     'src/Renderer/IndexBuffer.cpp',

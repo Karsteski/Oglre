@@ -11,6 +11,9 @@
 // clang-format on
 
 #include "Camera.h"
+
+#include <string>
+
 namespace Oglre {
 
 // -----------------------
@@ -28,6 +31,8 @@ public:
     static void Exit();
 
     static GLFWwindow* GetWindow();
+
+    static inline std::string shaderPath = "../resources/shaders/Basic.glsl"; // TODO: Function that returns all shader paths.
 
     // --------------------------------
     // Input Handling + Camera Movement
