@@ -1,9 +1,6 @@
 // GLEW loads OpenGL function pointers from the system's graphics drivers.
 // glew.h MUST be included before gl.h
 // clang-format off
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/geometric.hpp"
 #include <GL/glew.h>
 #include <GL/gl.h>
 
@@ -43,86 +40,14 @@
 #include "VertexBufferLayout.h"
 
 // Globals
-const int initialWindowWidth = 800;
-const int initialWindowHeight = 600;
+//const int initialWindowWidth = 800;
+//const int initialWindowHeight = 600;
 std::string shaderPath = "../resources/shaders/Basic.glsl";
-
-// Callback function for printing OpenGL debug statements.
-// Note that OpenGL Debug Output must be enabled to utilize glDebugMessageCallback() and consequently this function.
-//void APIENTRY glDebugPrintMessage(GLenum source, GLenum type, unsigned int id, GLenum severity, int length, const char* message, const void* data);
-
-//void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-    // C++ version verification.
-    std::cout << "C++ version = ";
-    if (__cplusplus == 202002L)
-        std::cout << "C++20\n";
-    else if (__cplusplus == 201703L)
-        std::cout << "C++17\n";
-    else if (__cplusplus == 201402L)
-        std::cout << "C++14\n";
-    else if (__cplusplus == 201103L)
-        std::cout << "C++11\n";
-    else if (__cplusplus == 199711L)
-        std::cout << "C++98\n";
-    else
-        std::cout << "pre-standard C++\n";
-
-    // GLFW Setup
-    if (!glfwInit()) {
-        std::cout << "GLFW Initialization failed!\n"
-                  << "Exiting...\n";
-
-        exit(EXIT_FAILURE);
-    }
-
-    // OpenGL version and mode setup.
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // GLFW Window settings
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-    // For OpenGL debugging.
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-
-    GLFWwindow* window = glfwCreateWindow(initialWindowWidth, initialWindowHeight, "Oglre", NULL, NULL);
-    if (!window) {
-        std::cout << "GLFW Window creation failed\n"
-                  << "Exiting...\n";
-
-        exit(EXIT_FAILURE);
-    }
-
-    glfwMakeContextCurrent(window);
-
-    // A valid OpenGL context must be created before initializing GLEW.
-    // Initialize OpenGL loader (GLEW in this project).
-    bool error = glewInit();
-    if (error != GLEW_OK) {
-        std::cout << "Error: Failed to initialize OpenGL function pointer loader!\n";
-    }
-
-    // Enable debugging layer of OpenGL
-    int glFlags = 0;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &glFlags);
-    if (glFlags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
-        glDebugMessageCallback(Oglre::Application::glDebugPrintMessage, nullptr);
-
-        std::cout << ("OpenGL Debug Mode\n");
-    } else {
-        std::cout << "Debug for OpenGL not supported by the system!\n";
-    }
-
-    // Printing OpenGL version for convenience.
-    std::cout << "OpenGL Version + System GPU Drivers: " << glGetString(GL_VERSION) << std::endl;
+    Oglre::Application::Initialize();
+    GLFWwindow* window = Oglre::Application::GetWindow();
 
     // clang-format off
     // Cube positions.
@@ -249,15 +174,15 @@ int main()
         static int currentWindowWidth = 0;
         static int currentWindowHeight = 0;
         glfwGetWindowSize(window, &currentWindowWidth, &currentWindowHeight);
-        glfwSetFramebufferSizeCallback(window, Oglre::Application::framebufferSizeCallback);
+        glfwSetFramebufferSizeCallback(window, Oglre::Application::FramebufferSizeCallback);
 
         // Process keyboard commands.
-        Oglre::Application::processKeyboardInput(window);
+        Oglre::Application::ProcessKeyboardInput(window);
 
         // Process mouse input and movement.
-        glfwSetMouseButtonCallback(window, Oglre::Application::mouseButtonCallback);
-        glfwSetCursorPosCallback(window, Oglre::Application::mouseMovementCallback);
-        glfwSetScrollCallback(window, Oglre::Application::mouseScrollWheelCallback);
+        glfwSetMouseButtonCallback(window, Oglre::Application::MouseButtonCallback);
+        glfwSetCursorPosCallback(window, Oglre::Application::MouseMovementCallback);
+        glfwSetScrollCallback(window, Oglre::Application::MouseScrollWheelCallback);
 
         // Projection matrix for use in the Vertex Shader.
         if (f_Projection == 0) {

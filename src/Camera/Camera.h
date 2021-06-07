@@ -39,9 +39,9 @@ public:
 
     // Camera Flags
     static inline bool constrainMovement = false;
-    static glm::vec2 xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    static glm::vec2 yPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    static glm::vec2 zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    static inline glm::vec2 xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    static inline glm::vec2 yPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    static inline glm::vec2 zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
 
     // Get the matrix that defines what the camera "sees".
     static glm::mat4 GetCameraViewMatrix();
