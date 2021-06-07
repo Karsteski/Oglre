@@ -5,19 +5,22 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 
-Oglre::Camera::Camera(glm::vec3 positionVector, glm::vec3 upVector, float yaw, float pitch)
-    : cameraFront(glm::vec3(0.0f, 0.0f, -1.0f))
-    , cameraPitch(defaultCameraPitch)
-    , cameraYaw(defaultCameraYaw)
-    , cameraSpeed(defaultCameraSpeed)
-    , cameraSensitivity(defaultCameraSensitivity)
-    , cameraFOV(defaultCameraFOV)
-{
-    cameraPosition = positionVector;
-    worldUp = upVector;
+// TODO: FIX THE ORDER OF THESE
+// Camera variable definitions
+glm::vec3 Oglre::Camera::cameraPosition(glm::vec3(200.0f, 200.0f, 400.0f));
+glm::vec3 Oglre::Camera::cameraUp(glm::vec3(0.0f, 1.0f, 0.0f));
+glm::vec3 Oglre::Camera::worldUp(glm::vec3(0.0f, 1.0f, 0.0f));
+glm::vec3 Oglre::Camera::cameraRight(glm::vec3(0.0f, 0.0f, 0.0f));
+glm::vec3 Oglre::Camera::cameraFront(glm::vec3(0.0f, 0.0f, -1.0f));
+float Oglre::Camera::cameraPitch(defaultCameraPitch);
+float Oglre::Camera::cameraYaw(defaultCameraYaw);
+float Oglre::Camera::cameraSpeed(defaultCameraSpeed);
+float Oglre::Camera::cameraSensitivity(defaultCameraSensitivity);
+float Oglre::Camera::cameraFOV(defaultCameraFOV);
+bool Oglre::Camera::constrainMovement(false);
 
-    cameraYaw = yaw;
-    cameraPitch = pitch;
+Oglre::Camera::Camera()
+{
 
     updateCameraVectors();
 }
@@ -27,29 +30,32 @@ glm::mat4 Oglre::Camera::GetCameraViewMatrix()
     return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 }
 
-void Oglre::Camera::processKeyboardInput(CameraMovements movement, float deltaTime)
+void Oglre::Camera::KeyboardInput(CameraMovements movement, float deltaTime)
 {
     float cameraVelocity = cameraSpeed * deltaTime;
 
-    switch (movement) {
-    case CameraMovements::FORWARD: {
-        cameraPosition += cameraVelocity * cameraFront;
-    }
-    case CameraMovements::BACKWARD: {
-        cameraPosition -= cameraVelocity * cameraFront;
-    }
-    case CameraMovements::LEFT: {
-        cameraPosition -= cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
-    }
-    case CameraMovements::RIGHT: {
-        cameraPosition += cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
-    }
-    case CameraMovements::UP: {
-        cameraPosition += cameraVelocity * cameraUp;
-    }
-    case CameraMovements::DOWN: {
-        cameraPosition -= cameraVelocity * cameraUp;
-    }
+    if (!constrainMovement) {
+        // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
+        switch (movement) {
+        case CameraMovements::FORWARD: {
+            cameraPosition += cameraVelocity * cameraFront;
+        }
+        case CameraMovements::BACKWARD: {
+            cameraPosition -= cameraVelocity * cameraFront;
+        }
+        case CameraMovements::LEFT: {
+            cameraPosition -= cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+        }
+        case CameraMovements::RIGHT: {
+            cameraPosition += cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+        }
+        case CameraMovements::UP: {
+            cameraPosition += cameraVelocity * cameraUp;
+        }
+        case CameraMovements::DOWN: {
+            cameraPosition -= cameraVelocity * cameraUp;
+        }
+        }
     }
 }
 
@@ -58,8 +64,10 @@ void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionO
     xPositionOffset *= cameraSensitivity;
     yPositionOffset *= cameraSensitivity;
 
-    cameraYaw += xPositionOffset;
-    cameraPitch += yPositionOffset;
+    if (!constrainMovement) {
+        cameraYaw += xPositionOffset;
+        cameraPitch += yPositionOffset;
+    }
 
     // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
     if (cameraPitch > 89.0f) {

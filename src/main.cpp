@@ -33,6 +33,8 @@
 #include <string>
 #include <vector>
 
+#include "Application.h"
+#include "Camera.h"
 #include "IndexBuffer.h"
 #include "Renderer.h"
 #include "Shader.h"
@@ -166,16 +168,17 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     // Should re-render scene after calling glfwSetFramebufferSizeCallback() as current frame
     // would have been drawn for the old viewport size.
 }
-
+/*
 // These variables will be part of the camera class
 // CameraFront is the direction vector pointing in the opposite direction of the where the camera is pointed.
 glm::vec3 cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 
 // Keep track of frame rate
-float deltaTime = 0.0f;
-float lastFrameTime = 0.0f;
+// float deltaTime = 0.0f;
+// float lastFrameTime = 0.0f;
 
 // Globals for mouse movement trigonometry calculation.
 // TODO: This all needs to be in camera class.
@@ -196,7 +199,7 @@ float mouseZoom = 90.0f;
 // Manage GLFW's keyboard input
 void processKeyboardInput(GLFWwindow* window)
 {
-    const float cameraSpeed = 1000.0f * deltaTime;
+    const float cameraSpeed = 1000.0f * Oglre::Application::GetDeltaTime();
 
     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -223,7 +226,7 @@ void processKeyboardInput(GLFWwindow* window)
 void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
     // Check to see if this is the first time receiving mouse input.
-    if (isFirstMouseInput) {
+    if (Oglre::Application::IsFirstMouseInput()) {
         lastXPosition = xPosition;
         lastYPosition = yPosition;
         isFirstMouseInput = false;
@@ -289,14 +292,16 @@ void mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double
     mouseZoom -= static_cast<float>(yPositionOffset);
 
     // Constrain zoom values
-    if (mouseZoom < 1.0f) {
-        mouseZoom = 1.0f;
-    }
+    //if (mouseZoom < 1.    cameraPosition = positionVector;
+    //worldUp = upVector;
+
+    //cameraYaw = yaw;
+    //cameraPitch = pitch;
     if (mouseZoom > 90.0f) {
         mouseZoom = 90.0f;
     }
 }
-
+*/
 int main()
 {
     // C++ version verification.
@@ -428,6 +433,9 @@ int main()
     // Instantiate Renderer.
     Renderer renderer;
 
+    // Instantiate Camera.
+    //Oglre::Camera camera(glm::vec3(200.0f, 200.0f, 400.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Oglre::Camera camera;
     // Model View Projection matrices
 
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
@@ -455,9 +463,9 @@ int main()
     while (!glfwWindowShouldClose(window)) {
 
         // Calculate time per frame
-        float currentFrameTime = glfwGetTime();
-        deltaTime = currentFrameTime - lastFrameTime;
-        lastFrameTime = currentFrameTime;
+        // float currentFrameTime = glfwGetTime();
+        // deltaTime = currentFrameTime - lastFrameTime;
+        // lastFrameTime = currentFrameTime;
 
         // DearImGUI things
         ImGui_ImplOpenGL3_NewFrame();
@@ -469,18 +477,19 @@ int main()
 
         // The direction is given by the sum of the cameraPosition + cameraFront (direction vector) to ensure camera keeps looking
         // in the target direction.
-        glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+        
+        //       glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
         // Basic Camera controls through DearImGUI
         {
             ImGui::Begin("Camera Controls");
 
-            ImGui::SliderFloat3("Camera Position", &cameraPosition[0], 0.0f, 1000.0f);
-            ImGui::SliderFloat3("Camera View", &cameraFront[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera Position", &camera.cameraPosition[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera View", &camera.cameraFront[0], 0.0f, 1000.0f);
 
             if (ImGui::Button("Reset Camera")) {
-                cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
-                cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+                camera.cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
+                camera.cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
             }
 
             static bool wireframeMode = false;
@@ -504,20 +513,26 @@ int main()
         aspectRatio = static_cast<float>(currentWindowWidth) / static_cast<float>(currentWindowHeight);
 
         // Process keyboard commands.
-        processKeyboardInput(window);
+        Oglre::Application::processKeyboardInput(window);
+        //processKeyboardInput(window);
 
         // Process mouse input and movement.
+        /*
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         glfwSetCursorPosCallback(window, mouseMovementCallback);
         glfwSetScrollCallback(window, mouseScrollWheelCallback);
+        */
+        glfwSetMouseButtonCallback(window, Oglre::Application::mouseButtonCallback);
+        glfwSetCursorPosCallback(window, Oglre::Application::mouseMovementCallback);
+        glfwSetScrollCallback(window, Oglre::Application::mouseScrollWheelCallback);
 
         // Orthographic projection matrix for use in the Vertex Shader.
         //orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
-        perspectiveProjection = glm::perspective(glm::radians(mouseZoom), (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
+        perspectiveProjection = glm::perspective(glm::radians(camera.cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
         // Set MVP matrix once projection matrix has been updated.
         // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
         // This affects how the MVP Matrix must be created.
-        mvpMatrix = perspectiveProjection * cameraView * model;
+        mvpMatrix = perspectiveProjection * camera.GetCameraViewMatrix() * model;
         // Now shader can be set.
         shader.SetUniformMat4f("u_MVP", mvpMatrix);
 

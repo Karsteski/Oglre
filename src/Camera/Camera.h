@@ -12,7 +12,7 @@ const float defaultCameraPitch = 0.0f;
 const float defaultCameraYaw = -90.0f;
 const float defaultCameraSpeed = 1000.0f;
 const float defaultCameraSensitivity = 1.0f;
-const float defaultCameraFOV = glm::radians(90.0f);
+const float defaultCameraFOV = 90.0f;
 
 // Possible options for the movement of the camera.
 enum class CameraMovements {
@@ -26,37 +26,40 @@ enum class CameraMovements {
 
 class Camera {
 public:
-    Camera(glm::vec3 positionVector = glm::vec3(200.0f, 200.0f, 400.0f), glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = defaultCameraYaw, float pitch = defaultCameraPitch);
+    Camera();
     ~Camera() = default;
 
     // Get the matrix that defines what the camera "sees".
-    glm::mat4 GetCameraViewMatrix();
+    static glm::mat4 GetCameraViewMatrix();
 
-    void processKeyboardInput(CameraMovements movement, float deltaTime);
-    void processMouseMovement(float xPositionOffset, float yPositionOffset);
-    void processMouseScroll(float yPositionOffset);
+    static void KeyboardInput(CameraMovements movement, float deltaTime);
+    static void processMouseMovement(float xPositionOffset, float yPositionOffset);
+    static void processMouseScroll(float yPositionOffset);
 
     // Camera Attributes.
-    glm::vec3 cameraPosition;
-    glm::vec3 cameraFront;
-    glm::vec3 cameraUp;
-    glm::vec3 cameraRight;
-    glm::vec3 worldUp;
+    static glm::vec3 cameraPosition;
+    static glm::vec3 cameraFront;
+    static glm::vec3 cameraUp;
+    static glm::vec3 cameraRight;
+    static glm::vec3 worldUp;
 
     // Euler Angles.
-    float cameraPitch;
-    float cameraYaw;
+    static float cameraPitch;
+    static float cameraYaw;
 
     // Camera Options.
-    float cameraSpeed;
-    float cameraSensitivity;
-    float cameraFOV;
+    static float cameraSpeed;
+    static float cameraSensitivity;
+    static float cameraFOV;
 
     // Camera Flags.
-    bool constrainPitch;
+    static bool constrainMovement;
+    static glm::vec2 xPosConstraint;
+    static glm::vec2 yPosConstraint;
+    static glm::vec2 zPosConstraint;
 
 private:
     // Update the direction that the camera points, i.e. the camera front vector.
-    void updateCameraVectors();
+    static void updateCameraVectors();
 };
 }
