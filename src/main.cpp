@@ -168,140 +168,7 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     // Should re-render scene after calling glfwSetFramebufferSizeCallback() as current frame
     // would have been drawn for the old viewport size.
 }
-/*
-// These variables will be part of the camera class
-// CameraFront is the direction vector pointing in the opposite direction of the where the camera is pointed.
-glm::vec3 cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
- glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
- glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-
-// Keep track of frame rate
-// float deltaTime = 0.0f;
-// float lastFrameTime = 0.0f;
-
-// Globals for mouse movement trigonometry calculation.
-// TODO: This all needs to be in camera class.
-static bool isRightMouseButtonPressed = false;
-static bool isFirstMouseInput = true;
-
-float pitch = 0.0f;
-float yaw = -90.0f; // Set to this value to ensure camera points into the screen i.e. negative z-axis
-
-// For mouse movement
-// Store last mouse positions in the application, initialized to the center of the screen.
-float lastXPosition = initialWindowWidth / 2.0f;
-float lastYPosition = initialWindowHeight / 2.0f;
-
-// Definites and allows changes to the viewport FOV (i.e. zooming in/out)
-float mouseZoom = 90.0f;
-
-// Manage GLFW's keyboard input
-void processKeyboardInput(GLFWwindow* window)
-{
-    const float cameraSpeed = 1000.0f * Oglre::Application::GetDeltaTime();
-
-    // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPosition += cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPosition -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPosition -= cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPosition += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        cameraPosition += cameraSpeed * cameraUp;
-    }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        cameraPosition -= cameraSpeed * cameraUp;
-    }
-}
-
-// Listen for mouse-movement events
-void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
-{
-    // Check to see if this is the first time receiving mouse input.
-    if (Oglre::Application::IsFirstMouseInput()) {
-        lastXPosition = xPosition;
-        lastYPosition = yPosition;
-        isFirstMouseInput = false;
-    }
-
-    float xPositionOffset = xPosition - lastXPosition;
-    float yPositionOffset = yPosition - lastYPosition;
-
-    lastXPosition = xPosition;
-    lastYPosition = yPosition;
-
-    const float sensitivity = 1.0f;
-    xPositionOffset *= sensitivity;
-    yPositionOffset *= sensitivity;
-
-    yaw += xPositionOffset;
-    pitch += yPositionOffset;
-
-    // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
-    }
-
-    // Create camera direction vector using Euler angles.
-    glm::vec3 cameraDirection;
-
-    // Must convert to radians first.
-    // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
-    cameraDirection.x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-    cameraDirection.y = sin(glm::radians(pitch));
-    cameraDirection.z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-
-    // Calculate direction vector if mouse is pressed.
-    if (isRightMouseButtonPressed) {
-        cameraFront = glm::normalize(cameraDirection);
-    }
-}
-
-// Listen for mouse button presses.
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-
-        // Enable camera movement with mouse.
-        isRightMouseButtonPressed = true;
-    } else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
-
-        // Disable camera movement with mouse.
-        isRightMouseButtonPressed = false;
-    }
-}
-
-// Listen for mouse scroll wheel.
-void mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset)
-{
-    mouseZoom -= static_cast<float>(yPositionOffset);
-
-    // Constrain zoom values
-    //if (mouseZoom < 1.    cameraPosition = positionVector;
-    //worldUp = upVector;
-
-    //cameraYaw = yaw;
-    //cameraPitch = pitch;
-    if (mouseZoom > 90.0f) {
-        mouseZoom = 90.0f;
-    }
-}
-*/
 int main()
 {
     // C++ version verification.
@@ -428,19 +295,17 @@ int main()
     // Deal with vertex and fragment shader.
     Shader shader(shaderPath);
     shader.Bind();
-    // shader.SetUniform("u_Colour", 1.0f, 1.0f, 1.0f, 1.0f);
 
     // Instantiate Renderer.
     Renderer renderer;
 
     // Instantiate Camera.
-    //Oglre::Camera camera(glm::vec3(200.0f, 200.0f, 400.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     Oglre::Camera camera;
-    // Model View Projection matrices
 
+    // Model View Projection matrices
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // Move "object" 100 units up and right.
-    glm::mat4 perspectiveProjection;
+    glm::mat4 projection;
     glm::mat4 mvpMatrix;
 
     // DearImGUI things
@@ -451,7 +316,6 @@ int main()
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
     std::string glsl_version = "#version 330";
@@ -462,23 +326,13 @@ int main()
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
 
-        // Calculate time per frame
-        // float currentFrameTime = glfwGetTime();
-        // deltaTime = currentFrameTime - lastFrameTime;
-        // lastFrameTime = currentFrameTime;
-
         // DearImGUI things
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        //bool show_demo_window = true;
-        //ImGui::ShowDemoWindow(&show_demo_window);
-
-        // The direction is given by the sum of the cameraPosition + cameraFront (direction vector) to ensure camera keeps looking
-        // in the target direction.
-        
-        //       glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+        // Flags
+        static int f_Projection = 0;
 
         // Basic Camera controls through DearImGUI
         {
@@ -499,6 +353,11 @@ int main()
             else
                 renderer.EnableWireFrameMode(false);
 
+            // Set projection matrix (orthographic or perspective)
+            ImGui::RadioButton("Perspective Projection", &f_Projection, 0);
+            ImGui::SameLine();
+            ImGui::RadioButton("Orthographic Projection", &f_Projection, 1);
+
             ImGui::End();
         }
 
@@ -514,25 +373,25 @@ int main()
 
         // Process keyboard commands.
         Oglre::Application::processKeyboardInput(window);
-        //processKeyboardInput(window);
 
         // Process mouse input and movement.
-        /*
-        glfwSetMouseButtonCallback(window, mouseButtonCallback);
-        glfwSetCursorPosCallback(window, mouseMovementCallback);
-        glfwSetScrollCallback(window, mouseScrollWheelCallback);
-        */
         glfwSetMouseButtonCallback(window, Oglre::Application::mouseButtonCallback);
         glfwSetCursorPosCallback(window, Oglre::Application::mouseMovementCallback);
         glfwSetScrollCallback(window, Oglre::Application::mouseScrollWheelCallback);
 
-        // Orthographic projection matrix for use in the Vertex Shader.
-        //orthoProjection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
-        perspectiveProjection = glm::perspective(glm::radians(camera.cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 1000.0f);
+        // Projection matrix for use in the Vertex Shader.
+        if (f_Projection == 0) {
+            projection = glm::perspective(glm::radians(camera.cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 10000.0f);
+        } else if (f_Projection == 1) {
+            // Currently broken
+            projection = glm::ortho(0.0f, aspectRatio, 0.0f, aspectRatio, 0.1f, 10000.0f);
+        }
+
         // Set MVP matrix once projection matrix has been updated.
         // Note that the calculation is actually Projection * View * Model as OpenGL uses column major ordering by default.
         // This affects how the MVP Matrix must be created.
-        mvpMatrix = perspectiveProjection * camera.GetCameraViewMatrix() * model;
+        mvpMatrix = projection * camera.GetCameraViewMatrix() * model;
+
         // Now shader can be set.
         shader.SetUniformMat4f("u_MVP", mvpMatrix);
 
