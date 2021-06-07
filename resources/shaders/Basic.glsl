@@ -21,9 +21,6 @@ void main()
 #shader fragment
 #version 330 core
 
-// layout(location = 0) out vec4 colour;
-// uniform vec4 u_Colour;
-
 in vec3 vertexOutputColour;      
 out vec4 fragmentColour;
 
