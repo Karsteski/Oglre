@@ -8,12 +8,6 @@
 
 namespace Oglre {
 
-const float defaultCameraPitch = 0.0f;
-const float defaultCameraYaw = -90.0f;
-const float defaultCameraSpeed = 1000.0f;
-const float defaultCameraSensitivity = 1.0f;
-const float defaultCameraFOV = 90.0f;
-
 // Possible options for the movement of the camera.
 enum class CameraMovements {
     FORWARD,
@@ -29,34 +23,32 @@ public:
     Camera();
     ~Camera() = default;
 
+    // Camera Attributes.
+    static inline glm::vec3 cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
+    static inline glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    static inline glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    static inline glm::vec3 cameraRight = glm::vec3(0.0f, 0.0f, 0.0f);
+    static inline glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    // Camera Options
+    static inline float cameraPitch = 0.0f;
+    static inline float cameraYaw = -90.0f;
+    static inline float cameraSpeed = 1000.0f;
+    static inline float cameraSensitivity = 0.25f;
+    static inline float cameraFOV = 90.0f;
+
+    // Camera Flags
+    static inline bool constrainMovement = false;
+    static glm::vec2 xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    static glm::vec2 yPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    static glm::vec2 zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+
     // Get the matrix that defines what the camera "sees".
     static glm::mat4 GetCameraViewMatrix();
 
     static void KeyboardInput(CameraMovements movement, float deltaTime);
     static void processMouseMovement(float xPositionOffset, float yPositionOffset);
     static void processMouseScroll(float yPositionOffset);
-
-    // Camera Attributes.
-    static glm::vec3 cameraPosition;
-    static glm::vec3 cameraFront;
-    static glm::vec3 cameraUp;
-    static glm::vec3 cameraRight;
-    static glm::vec3 worldUp;
-
-    // Euler Angles.
-    static float cameraPitch;
-    static float cameraYaw;
-
-    // Camera Options.
-    static float cameraSpeed;
-    static float cameraSensitivity;
-    static float cameraFOV;
-
-    // Camera Flags.
-    static bool constrainMovement;
-    static glm::vec2 xPosConstraint;
-    static glm::vec2 yPosConstraint;
-    static glm::vec2 zPosConstraint;
 
 private:
     // Update the direction that the camera points, i.e. the camera front vector.

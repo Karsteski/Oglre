@@ -4,14 +4,25 @@
 #include <iostream>
 #include <string>
 
+// ---------------------
+// Application Execution
+// ---------------------
+
+void Oglre::Application::Initialize()
+{
+}
+
+void Oglre::Application::Run()
+{
+}
+
+void Oglre::Application::Exit()
+{
+}
+
 // -----------------------
 // Application Information
 // -----------------------
-
-// Application variables
-int Oglre::Application::initialWindowWidth = 800;
-int Oglre::Application::initialWindowHeight = 600;
-glm::vec2 Oglre::Application::lastMousePosition = glm::vec2(initialWindowWidth / 2.0f, initialWindowHeight / 2.0f);
 
 bool Oglre::Application::IsFirstMouseInput()
 {

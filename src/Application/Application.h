@@ -19,14 +19,22 @@ namespace Oglre {
 
 class Application {
 public:
+    // ---------------------
+    // Application Execution
+    // ---------------------
+
+    static void Initialize();
+    static void Run();
+    static void Exit();
+
     // --------------------------------
     // Input Handling + Camera Movement
     // --------------------------------
 
-    static int initialWindowWidth;
-    static int initialWindowHeight;
-    static glm::vec2 lastMousePosition;
-    static Camera camera;
+    static constexpr int initialWindowWidth = 800;
+    static constexpr int initialWindowHeight = 600;
+    static inline glm::vec2 lastMousePosition = glm::vec2(initialWindowWidth / 2.0f, initialWindowHeight / 2.0f);
+    static inline Camera camera;
 
     static void processKeyboardInput(GLFWwindow* window); // Manage GLFW's keyboard input
     static void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition); // Listen for mouse-movement events

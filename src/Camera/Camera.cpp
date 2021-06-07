@@ -5,19 +5,6 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 
-// TODO: FIX THE ORDER OF THESE
-// Camera variable definitions
-glm::vec3 Oglre::Camera::cameraPosition(glm::vec3(200.0f, 200.0f, 400.0f));
-glm::vec3 Oglre::Camera::cameraUp(glm::vec3(0.0f, 1.0f, 0.0f));
-glm::vec3 Oglre::Camera::worldUp(glm::vec3(0.0f, 1.0f, 0.0f));
-glm::vec3 Oglre::Camera::cameraRight(glm::vec3(0.0f, 0.0f, 0.0f));
-glm::vec3 Oglre::Camera::cameraFront(glm::vec3(0.0f, 0.0f, -1.0f));
-float Oglre::Camera::cameraPitch(defaultCameraPitch);
-float Oglre::Camera::cameraYaw(defaultCameraYaw);
-float Oglre::Camera::cameraSpeed(defaultCameraSpeed);
-float Oglre::Camera::cameraSensitivity(defaultCameraSensitivity);
-float Oglre::Camera::cameraFOV(defaultCameraFOV);
-bool Oglre::Camera::constrainMovement(false);
 
 Oglre::Camera::Camera()
 {
