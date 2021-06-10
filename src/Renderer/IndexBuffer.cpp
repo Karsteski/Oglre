@@ -2,14 +2,14 @@
 #include <GL/glew.h>
 #include <cstdint>
 
-Oglre::IndexBuffer::IndexBuffer(const std::vector<uint32_t> data, uint32_t count)
-    : m_Count(count)
+Oglre::IndexBuffer::IndexBuffer(const std::vector<uint32_t> data)
+    : m_Count(data.size())
 {
     const int numberOfBuffers = 1;
 
     glGenBuffers(numberOfBuffers, &m_RendererID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), data.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(uint32_t), data.data(), GL_STATIC_DRAW);
 }
 
 Oglre::IndexBuffer::~IndexBuffer()

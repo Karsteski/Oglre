@@ -1,10 +1,12 @@
 #pragma once
 
-#include <cstdint>
-
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+
+#include <cstdint>
+
 namespace Oglre {
+
 class VertexArray {
 public:
     VertexArray();

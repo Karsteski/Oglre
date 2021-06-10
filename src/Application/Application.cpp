@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "Camera.h"
 #include "IndexBuffer.h"
+#include "Mesh.h"
+#include "Model.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "VertexArray.h"
@@ -93,8 +95,8 @@ void Oglre::Application::Run()
 
     GLFWwindow* window = Oglre::Application::GetWindow();
 
-    // clang-format off
     // Cube positions.
+    /*
     std::vector<float> vertices = {
         // Positions                // Colours
         100.0f, 100.0f, 100.0f,     1.0f, 0.0f, 0.0f, // 0
@@ -106,44 +108,54 @@ void Oglre::Application::Run()
         -100.0f, -100.0f, -100.0f,  0.0f, 0.0f, 1.0f, // 6
         100.0f, -100.0f, -100.0f,   1.0f, 1.0f, 1.0f  // 7
     };
+    */
+
+    std::vector<Vertex> vertices(8);
+    vertices[0].position = { 0.5f, 0.5f, 0.5f };
+    vertices[0].colour = { 1.0f, 0.0f, 0.0f };
+
+    vertices[1].position = { -0.5f, 0.5f, 0.5f };
+    vertices[1].colour = { 0.0f, 1.0f, 0.0f };
+
+    vertices[2].position = { -0.5f, 0.5f, -0.5f };
+    vertices[2].colour = { 0.0f, 0.0f, 1.0f };
+
+    vertices[3].position = { 0.5f, 0.5f, -0.5f };
+    vertices[3].colour = { 1.0f, 1.0f, 1.0f };
+
+    vertices[4].position = { 0.5f, -0.5f, 0.5f };
+    vertices[4].colour = { 1.0f, 0.0f, 0.0f };
+
+    vertices[5].position = { -0.5f, -0.5f, 0.5f };
+    vertices[5].colour = { 0.0f, 1.0f, 0.0f };
+
+    vertices[6].position = { -0.5f, -0.5f, -0.5f };
+    vertices[6].colour = { 0.0f, 0.0f, 1.0 };
+
+    vertices[7].position = { 0.5f, -0.5f, -0.5f };
+    vertices[7].colour = { 1.0f, 1.0f, 1.0f };
 
     // Index Buffer.
     // References the vector of positions necessary to draw 12 triangles making up a cube.
-    std::vector<unsigned int> indices {
-        0, 1, 3, // top 1
-        3, 1, 2, // top 2
-        2, 6, 7, // front 1
-        7, 3, 2, // front 2
-        7, 6, 5, // bottom 1
-        5, 4, 7, // bottom 2
-        5, 1, 4, // back 1
-        4, 1, 0, // back 2
-        4, 3, 7, // right 1
-        3, 4, 0, // right 2
-        5, 6, 2, // left 1
-        5, 1, 2  // left 2
-    };
+    std::vector<unsigned int>
+        indices {
+            0, 1, 3, // top 1
+            3, 1, 2, // top 2
+            2, 6, 7, // front 1
+            7, 3, 2, // front 2
+            7, 6, 5, // bottom 1
+            5, 4, 7, // bottom 2
+            5, 1, 4, // back 1
+            4, 1, 0, // back 2
+            4, 3, 7, // right 1
+            3, 4, 0, // right 2
+            5, 6, 2, // left 1
+            5, 1, 2 // left 2
+        };
     // clang-format on
 
-    // Create Vertex Array.
-    VertexArray va;
-
-    // Generate Vertex Buffer Object.
-    const int nPoints = 3 * 2 * 8;
-    VertexBuffer vbo(vertices, nPoints * sizeof(float));
-
-    // Create Vertex Buffer Layout.
-    VertexBufferLayout layout;
-    const int nFloatsPerVertexAttribute = 3;
-
-    // One Push for each vertex attribute.
-    layout.Push<float>(nFloatsPerVertexAttribute);
-    layout.Push<float>(nFloatsPerVertexAttribute);
-    va.AddBuffer(vbo, layout);
-
-    // Generate Index Buffer.
-    const int numberOfIndices = 3 * 12;
-    IndexBuffer ibo(indices, numberOfIndices);
+    // Create Mesh
+    Oglre::Mesh cubeMesh(vertices, indices);
 
     // Deal with vertex and fragment shader.
     Shader shader(shaderPath);
@@ -157,7 +169,8 @@ void Oglre::Application::Run()
 
     // Model View Projection matrices
     // First matrix is an identity matrix, second matrix is the translation matrix that moves the view.
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // Move "object" 100 units up and right.
+
+    glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f));
     glm::mat4 projection;
     glm::mat4 mvpMatrix;
 
@@ -249,7 +262,7 @@ void Oglre::Application::Run()
 
         // Render from this point on.
         renderer.Clear();
-        renderer.Draw(va, ibo, shader);
+        renderer.Draw(cubeMesh.GetVertexArrayObject(), cubeMesh.GetIndexBufferObject(), shader);
 
         // DearImGUI things
         ImGui::Render();

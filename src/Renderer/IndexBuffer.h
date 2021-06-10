@@ -7,7 +7,7 @@ namespace Oglre {
 class IndexBuffer {
 
 public:
-    IndexBuffer(const std::vector<uint32_t> data, uint32_t count);
+    IndexBuffer(const std::vector<uint32_t> data);
     ~IndexBuffer();
 
     void Bind() const;

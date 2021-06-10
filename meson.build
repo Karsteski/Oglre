@@ -1,4 +1,4 @@
-project('oglre','cpp', version : '0.1.0', default_options : ['-cpp_std=c++17', '-warning_level=3'])
+project('oglre','cpp', version : '0.1.0')
 
 # Print relevant options.
 message('C++ Version = ' + get_option('cpp_std'))
@@ -19,14 +19,17 @@ src_files = [
     'src/Renderer/VertexArray.cpp',
     'src/Renderer/Renderer.cpp',
     'src/Shader/Shader.cpp',
-    'src/Camera/Camera.cpp'
+    'src/Camera/Camera.cpp',
+    'src/Model/Mesh.cpp',
+    'src/Model/Model.cpp'
 ]
 
 include_dirs = [
     'src/Application',
     'src/Renderer',
     'src/Shader',
-    'src/Camera'
+    'src/Camera',
+    'src/Model'
 ]
 
 executable('oglre',
