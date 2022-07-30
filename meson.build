@@ -1,4 +1,4 @@
-project('oglre','cpp', version : '0.1.0', default_options : ['-cpp_std=c++17', '-warning_level=3'])
+project('oglre','cpp', version : '0.1.0')
 
 # Print relevant options.
 message('C++ Version = ' + get_option('cpp_std'))
