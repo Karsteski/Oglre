@@ -8,3 +8,7 @@
 !/subprojects/imgui.wrap
 !/subprojects/glm.wrap
 !/subprojects/glew.wrap
+
+# Exclude clang cache
+.cache/*
+

@@ -140,7 +140,7 @@ void Oglre::Application::Run()
     layout.Push<float>(nFloatsPerVertexAttribute);
     layout.Push<float>(nFloatsPerVertexAttribute);
     va.AddBuffer(vbo, layout);
-
+    
     // Generate Index Buffer.
     const int numberOfIndices = 3 * 12;
     IndexBuffer ibo(indices, numberOfIndices);
@@ -250,7 +250,7 @@ void Oglre::Application::Run()
         // Render from this point on.
         renderer.Clear();
         renderer.Draw(va, ibo, shader);
-
+ 
         // DearImGUI things
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

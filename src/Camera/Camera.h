@@ -8,6 +8,7 @@
 
 namespace Oglre {
 
+// TODO: Should be defined in .cpp
 // Possible options for the movement of the camera.
 enum class CameraMovements {
     FORWARD,
@@ -46,6 +47,7 @@ public:
     // Get the matrix that defines what the camera "sees".
     static glm::mat4 GetCameraViewMatrix();
 
+    // TODO: Camera should NOT be processing keyboard input. It should only take a CameraMovements
     static void KeyboardInput(CameraMovements movement, float deltaTime);
     static void processMouseMovement(float xPositionOffset, float yPositionOffset);
     static void processMouseScroll(float yPositionOffset);

@@ -9,6 +9,8 @@ void Renderer::Draw(const Oglre::VertexArray& va, const Oglre::IndexBuffer& ibo,
 {
     shader.Bind();
     va.Bind();
+
+    // TODO: Don't need to bind an ibo again. VAOs keep track of the last IBO bound, so what we really need is to keep track of what the last IBO + VBO was about to a VAO 
     ibo.Bind();
 
     // Enable Depth Testing. Prevents occluded triangles from being drawn.
