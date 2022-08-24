@@ -16,34 +16,77 @@ glm::mat4 Oglre::Camera::GetCameraViewMatrix()
     return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 }
 
-void Oglre::Camera::KeyboardInput(CameraMovements movement, float deltaTime)
+bool Oglre::moveCamera(Camera camera, CameraMovement movement){
+    float cameraVelocity = camera.cameraSpeed  ; // * deltaTime
+
+    if (!camera.constrainMovement) {
+        // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
+        switch (movement) {
+        case CameraMovement::FORWARD: {
+            camera.cameraPosition += cameraVelocity * camera.cameraFront;
+            break;
+        }
+        case CameraMovement::BACKWARD: {
+            camera.cameraPosition -= cameraVelocity * camera.cameraFront;
+            break;
+        }
+        case CameraMovement::LEFT: {
+            camera.cameraPosition -= cameraVelocity * glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+            break;
+        }
+        case CameraMovement::RIGHT: {
+            camera.cameraPosition += cameraVelocity * glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+            break;
+        }
+        case CameraMovement::UP: {
+            camera.cameraPosition += cameraVelocity * camera.cameraUp;
+            break;
+        }
+        case CameraMovement::DOWN: {
+            camera.cameraPosition -= cameraVelocity * camera.cameraUp;
+            break;
+        }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
 {
+    // To refactor KeyboardInput.
+    // - Move Input stuff into free functions
+    // - Have camera just be set of positions and direction
+    // - Have free function to move a camera.
+    // - Have a function that has a static time variable, then updates on time passed since last call i.e. in render loop
     float cameraVelocity = cameraSpeed * deltaTime;
 
     if (!constrainMovement) {
         // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
         switch (movement) {
-        case CameraMovements::FORWARD: {
+        case CameraMovement::FORWARD: {
             cameraPosition += cameraVelocity * cameraFront;
             break;
         }
-        case CameraMovements::BACKWARD: {
+        case CameraMovement::BACKWARD: {
             cameraPosition -= cameraVelocity * cameraFront;
             break;
         }
-        case CameraMovements::LEFT: {
+        case CameraMovement::LEFT: {
             cameraPosition -= cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
             break;
         }
-        case CameraMovements::RIGHT: {
+        case CameraMovement::RIGHT: {
             cameraPosition += cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
             break;
         }
-        case CameraMovements::UP: {
+        case CameraMovement::UP: {
             cameraPosition += cameraVelocity * cameraUp;
             break;
         }
-        case CameraMovements::DOWN: {
+        case CameraMovement::DOWN: {
             cameraPosition -= cameraVelocity * cameraUp;
             break;
         }

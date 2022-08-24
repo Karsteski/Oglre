@@ -12,3 +12,5 @@
 # Exclude clang cache
 .cache/*
 
+# Don't want the DearImgui ini file
+imgui.ini

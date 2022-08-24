@@ -329,22 +329,22 @@ void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window)
 
     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::FORWARD, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::BACKWARD, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::LEFT, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::RIGHT, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::UP, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::UP, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovements::DOWN, deltaTime);
+        camera.KeyboardInput(Oglre::CameraMovement::DOWN, deltaTime);
     }
 }
 
