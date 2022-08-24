@@ -140,7 +140,7 @@ void Oglre::Application::Run()
     layout.Push<float>(nFloatsPerVertexAttribute);
     layout.Push<float>(nFloatsPerVertexAttribute);
     va.AddBuffer(vbo, layout);
-    
+
     // Generate Index Buffer.
     const int numberOfIndices = 3 * 12;
     IndexBuffer ibo(indices, numberOfIndices);
@@ -191,12 +191,12 @@ void Oglre::Application::Run()
         {
             ImGui::Begin("Camera Controls");
 
-            ImGui::SliderFloat3("Camera Position", &camera.cameraPosition[0], 0.0f, 1000.0f);
-            ImGui::SliderFloat3("Camera View", &camera.cameraFront[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera Position", &camera.m_cameraPosition[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera View", &camera.m_cameraFront[0], 0.0f, 1000.0f);
 
             if (ImGui::Button("Reset Camera")) {
-                camera.cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
-                camera.cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+                camera.m_cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
+                camera.m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
             }
 
             static bool wireframeMode = false;
@@ -221,20 +221,22 @@ void Oglre::Application::Run()
         glfwSetFramebufferSizeCallback(window, Oglre::Application::FramebufferSizeCallback);
 
         // Process keyboard commands.
-        Oglre::Application::ProcessKeyboardInput(window);
+        Oglre::Application::ProcessKeyboardInput(window, camera);
 
         // Process mouse input and movement.
-        glfwSetMouseButtonCallback(window, Oglre::Application::MouseButtonCallback);
-        glfwSetCursorPosCallback(window, Oglre::Application::MouseMovementCallback);
-        glfwSetScrollCallback(window, Oglre::Application::MouseScrollWheelCallback);
+        
+        // TODO: Need to move these to free functions probably
+        // glfwSetMouseButtonCallback(window, Oglre::Application::MouseButtonCallback);
+        // glfwSetCursorPosCallback(window, Oglre::Application::MouseMovementCallback);
+        // glfwSetScrollCallback(window, Oglre::Application::MouseScrollWheelCallback);
 
         // Projection matrix for use in the Vertex Shader.
         if (f_Projection == 0) {
-            projection = glm::perspective(glm::radians(camera.cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 10000.0f);
+            projection = glm::perspective(glm::radians(camera.m_cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 10000.0f);
         } else if (f_Projection == 1) {
             // TODO: Works, but I need the object to be in the same position when switching between perspectives (Possible..?)
-            static float min = -pow(10, glm::radians(camera.cameraFOV));
-            static float max = pow(10, glm::radians(camera.cameraFOV));
+            static float min = -pow(10, glm::radians(camera.m_cameraFOV));
+            static float max = pow(10, glm::radians(camera.m_cameraFOV));
 
             projection = glm::ortho(min, max, min, max, -10000.0f, 10000.0f);
         }
@@ -250,7 +252,7 @@ void Oglre::Application::Run()
         // Render from this point on.
         renderer.Clear();
         renderer.Draw(va, ibo, shader);
- 
+
         // DearImGUI things
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -323,10 +325,12 @@ float Oglre::Application::GetDeltaTime()
 // Input Handling + Camera Movement
 // --------------------------------
 
-void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window)
+void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window, Camera& camera)
 {
     const float deltaTime = Application::GetDeltaTime();
 
+    // moveCamera(m_camera, Oglre::CameraMovement::FORWARD);
+ 
     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.KeyboardInput(Oglre::CameraMovement::FORWARD, deltaTime);
@@ -348,7 +352,7 @@ void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window)
     }
 }
 
-void Oglre::Application::MouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
+/* void Oglre::Application::MouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
     if (Application::IsFirstMouseInput()) {
         Application::lastMousePosition.x = xPosition;
@@ -361,18 +365,18 @@ void Oglre::Application::MouseMovementCallback(GLFWwindow* window, double xPosit
     Application::lastMousePosition.x = xPosition;
     Application::lastMousePosition.y = yPosition;
 
-    xPositionOffset *= camera.cameraSensitivity;
-    yPositionOffset *= camera.cameraSensitivity;
+    xPositionOffset *= m_camera.cameraSensitivity;
+    yPositionOffset *= m_camera.cameraSensitivity;
 
-    camera.cameraYaw += xPositionOffset;
-    camera.cameraPitch += yPositionOffset;
+    m_camera.cameraYaw += xPositionOffset;
+    m_camera.cameraPitch += yPositionOffset;
 
     // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
-    if (camera.cameraPitch > 89.0f) {
-        camera.cameraPitch = 89.0f;
+    if (m_camera.cameraPitch > 89.0f) {
+        m_camera.cameraPitch = 89.0f;
     }
-    if (camera.cameraPitch < -89.0f) {
-        camera.cameraPitch = -89.0f;
+    if (m_camera.cameraPitch < -89.0f) {
+        m_camera.cameraPitch = -89.0f;
     }
 
     // Create camera direction vector using Euler angles.
@@ -380,13 +384,13 @@ void Oglre::Application::MouseMovementCallback(GLFWwindow* window, double xPosit
 
     // Must convert to radians first.
     // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
-    cameraDirection.x = std::cos(glm::radians(camera.cameraYaw)) * std::cos(glm::radians(camera.cameraPitch));
-    cameraDirection.y = sin(glm::radians(camera.cameraPitch));
-    cameraDirection.z = std::sin(glm::radians(camera.cameraYaw)) * std::cos(glm::radians(camera.cameraPitch));
+    cameraDirection.x = std::cos(glm::radians(m_camera.cameraYaw)) * std::cos(glm::radians(m_camera.cameraPitch));
+    cameraDirection.y = sin(glm::radians(m_camera.cameraPitch));
+    cameraDirection.z = std::sin(glm::radians(m_camera.cameraYaw)) * std::cos(glm::radians(m_camera.cameraPitch));
 
     // Set camera direction vector if mouse is pressed.
     if (m_isRightMouseButtonPressed) {
-        camera.cameraFront = glm::normalize(cameraDirection);
+        m_camera.cameraFront = glm::normalize(cameraDirection);
     }
 }
 
@@ -409,16 +413,17 @@ void Oglre::Application::MouseButtonCallback(GLFWwindow* window, int button, int
 
 void Oglre::Application::MouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset)
 {
-    camera.cameraFOV -= static_cast<float>(yPositionOffset);
+    m_camera.cameraFOV -= static_cast<float>(yPositionOffset);
 
     // Constrain zoom/FOV values
-    if (camera.cameraFOV < 1.0f) {
-        camera.cameraFOV = 1.0f;
+    if (m_camera.cameraFOV < 1.0f) {
+        m_camera.cameraFOV = 1.0f;
     }
-    if (camera.cameraFOV > 90.0f) {
-        camera.cameraFOV = 90.0f;
+    if (m_camera.cameraFOV > 90.0f) {
+        m_camera.cameraFOV = 90.0f;
     }
 }
+ */
 
 // ----------------------
 // OpenGL Error Functions
@@ -430,8 +435,8 @@ void APIENTRY Oglre::Application::GLDebugPrintMessage(GLenum source, GLenum type
     To enable the debugging layer of OpenGL:
 
     glEnable(GL_DEBUG_OUTPUT); - This is a faster version but there are no debugger breakpoints.
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); - Callback is synchronized w/ errors, and a breakpoint can be placed on the callback to get a stacktrace for the GL error. 
-    
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); - Callback is synchronized w/ errors, and a breakpoint can be placed on the callback to get a stacktrace for the GL error.
+
     // Followed by the call:
     glDebugMessageCallback(glDebugPrintMessage, nullptr);
     */

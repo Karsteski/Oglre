@@ -13,37 +13,37 @@ Oglre::Camera::Camera()
 
 glm::mat4 Oglre::Camera::GetCameraViewMatrix()
 {
-    return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+    return glm::lookAt(m_cameraPosition, m_cameraPosition + m_cameraFront, m_cameraUp);
 }
 
-bool Oglre::moveCamera(Camera camera, CameraMovement movement){
-    float cameraVelocity = camera.cameraSpeed  ; // * deltaTime
+bool Oglre::Camera::moveCamera( CameraMovement movement){
+    float cameraVelocity = m_cameraSpeed  ; // * deltaTime
 
-    if (!camera.constrainMovement) {
+    if (!m_constrainMovement) {
         // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
         switch (movement) {
         case CameraMovement::FORWARD: {
-            camera.cameraPosition += cameraVelocity * camera.cameraFront;
+            m_cameraPosition += cameraVelocity * m_cameraFront;
             break;
         }
         case CameraMovement::BACKWARD: {
-            camera.cameraPosition -= cameraVelocity * camera.cameraFront;
+            m_cameraPosition -= cameraVelocity * m_cameraFront;
             break;
         }
         case CameraMovement::LEFT: {
-            camera.cameraPosition -= cameraVelocity * glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+            m_cameraPosition -= cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
             break;
         }
         case CameraMovement::RIGHT: {
-            camera.cameraPosition += cameraVelocity * glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+            m_cameraPosition += cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
             break;
         }
         case CameraMovement::UP: {
-            camera.cameraPosition += cameraVelocity * camera.cameraUp;
+            m_cameraPosition += cameraVelocity * m_cameraUp;
             break;
         }
         case CameraMovement::DOWN: {
-            camera.cameraPosition -= cameraVelocity * camera.cameraUp;
+            m_cameraPosition -= cameraVelocity * m_cameraUp;
             break;
         }
         }
@@ -54,6 +54,13 @@ bool Oglre::moveCamera(Camera camera, CameraMovement movement){
     return false;
 }
 
+bool Oglre::Camera::rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees){
+
+}
+bool Oglre::Camera::zoomCamera(float adjust_FOV){
+
+}
+
 void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
 {
     // To refactor KeyboardInput.
@@ -61,33 +68,33 @@ void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
     // - Have camera just be set of positions and direction
     // - Have free function to move a camera.
     // - Have a function that has a static time variable, then updates on time passed since last call i.e. in render loop
-    float cameraVelocity = cameraSpeed * deltaTime;
+    float cameraVelocity = m_cameraSpeed * deltaTime;
 
-    if (!constrainMovement) {
+    if (!m_constrainMovement) {
         // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
         switch (movement) {
         case CameraMovement::FORWARD: {
-            cameraPosition += cameraVelocity * cameraFront;
+            m_cameraPosition += cameraVelocity * m_cameraFront;
             break;
         }
         case CameraMovement::BACKWARD: {
-            cameraPosition -= cameraVelocity * cameraFront;
+            m_cameraPosition -= cameraVelocity * m_cameraFront;
             break;
         }
         case CameraMovement::LEFT: {
-            cameraPosition -= cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+            m_cameraPosition -= cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
             break;
         }
         case CameraMovement::RIGHT: {
-            cameraPosition += cameraVelocity * glm::normalize(glm::cross(cameraFront, cameraUp));
+            m_cameraPosition += cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
             break;
         }
         case CameraMovement::UP: {
-            cameraPosition += cameraVelocity * cameraUp;
+            m_cameraPosition += cameraVelocity * m_cameraUp;
             break;
         }
         case CameraMovement::DOWN: {
-            cameraPosition -= cameraVelocity * cameraUp;
+            m_cameraPosition -= cameraVelocity * m_cameraUp;
             break;
         }
         }
@@ -96,20 +103,20 @@ void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
 
 void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionOffset)
 {
-    xPositionOffset *= cameraSensitivity;
-    yPositionOffset *= cameraSensitivity;
+    xPositionOffset *= m_cameraSensitivity;
+    yPositionOffset *= m_cameraSensitivity;
 
-    if (!constrainMovement) {
-        cameraYaw += xPositionOffset;
-        cameraPitch += yPositionOffset;
+    if (!m_constrainMovement) {
+        m_cameraYaw += xPositionOffset;
+        m_cameraPitch += yPositionOffset;
     }
 
     // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
-    if (cameraPitch > 89.0f) {
-        cameraPitch = 89.0f;
+    if (m_cameraPitch > 89.0f) {
+        m_cameraPitch = 89.0f;
     }
-    if (cameraPitch < -89.0f) {
-        cameraPitch = -89.0f;
+    if (m_cameraPitch < -89.0f) {
+        m_cameraPitch = -89.0f;
     }
 
     updateCameraVectors();
@@ -117,14 +124,14 @@ void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionO
 
 void Oglre::Camera::processMouseScroll(float yPositionOffset)
 {
-    cameraFOV -= static_cast<float>(yPositionOffset);
+    m_cameraFOV -= static_cast<float>(yPositionOffset);
 
     // Constrain zoom/FOV values.
-    if (cameraFOV < 1.0f) {
-        cameraFOV = 1.0f;
+    if (m_cameraFOV < 1.0f) {
+        m_cameraFOV = 1.0f;
     }
-    if (cameraFOV > 90.0f) {
-        cameraFOV = 90.0f;
+    if (m_cameraFOV > 90.0f) {
+        m_cameraFOV = 90.0f;
     }
 }
 
@@ -135,11 +142,11 @@ void Oglre::Camera::updateCameraVectors()
 
     // Must convert to radians first.
     // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
-    cameraDirection.x = std::cos(glm::radians(cameraYaw)) * std::cos(glm::radians(cameraPitch));
-    cameraDirection.y = sin(glm::radians(cameraPitch));
-    cameraDirection.z = std::sin(glm::radians(cameraYaw)) * std::cos(glm::radians(cameraPitch));
+    cameraDirection.x = std::cos(glm::radians(m_cameraYaw)) * std::cos(glm::radians(m_cameraPitch));
+    cameraDirection.y = sin(glm::radians(m_cameraPitch));
+    cameraDirection.z = std::sin(glm::radians(m_cameraYaw)) * std::cos(glm::radians(m_cameraPitch));
 
-    cameraFront = glm::normalize(cameraDirection);
-    cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
-    cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+    m_cameraFront = glm::normalize(cameraDirection);
+    m_cameraRight = glm::normalize(glm::cross(m_cameraFront, m_worldUp));
+    m_cameraUp = glm::normalize(glm::cross(m_cameraRight, m_cameraFront));
 }

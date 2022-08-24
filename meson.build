@@ -19,7 +19,8 @@ src_files = [
     'src/Renderer/VertexArray.cpp',
     'src/Renderer/Renderer.cpp',
     'src/Shader/Shader.cpp',
-    'src/Camera/Camera.cpp'
+    'src/Camera/Camera.cpp',
+    'src/Application/AuxiliaryFunctions.cpp',
 ]
 
 include_dirs = [

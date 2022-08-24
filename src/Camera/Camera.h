@@ -17,45 +17,47 @@ enum class CameraMovement : int {
     DOWN
 };
 
-class Camera;
-
-bool moveCamera(Camera camera, CameraMovement movement);
 
 class Camera {
 public:
     Camera();
 
     // Camera Attributes.
-    static inline glm::vec3 cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
-    static inline glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    static inline glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    static inline glm::vec3 cameraRight = glm::vec3(0.0f, 0.0f, 0.0f);
-    static inline glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 m_cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
+    glm::vec3 m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 m_cameraRight = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 m_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Camera Options
-    static inline float cameraPitch = 0.0f;
-    static inline float cameraYaw = -90.0f;
-    static inline float cameraSpeed = 1000.0f;
-    static inline float cameraSensitivity = 0.25f;
-    static inline float cameraFOV = 90.0f;
+    float m_cameraPitch = 0.0f;
+    float m_cameraYaw = -90.0f;
+    float m_cameraSpeed = 1000.0f;
+    float m_cameraSensitivity = 0.25f;
+    float m_cameraFOV = 90.0f;
 
     // Camera Flags
-    static inline bool constrainMovement = false;
-    static inline glm::vec2 xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    static inline glm::vec2 yPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    static inline glm::vec2 zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    bool m_constrainMovement = false;
+    glm::vec2 m_xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    glm::vec2 m_nPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    glm::vec2 m_zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
 
     // Get the matrix that defines what the camera "sees".
-    static glm::mat4 GetCameraViewMatrix();
+    glm::mat4 GetCameraViewMatrix();
 
+    bool moveCamera(CameraMovement movement);
+
+    bool rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees);
+    bool zoomCamera(float adjust_FOV);
 
     // TODO: Camera should NOT be processing keyboard input. It should only take a CameraMovements
-    static void KeyboardInput(CameraMovement movement, float deltaTime);
-    static void processMouseMovement(float xPositionOffset, float yPositionOffset);
-    static void processMouseScroll(float yPositionOffset);
+    void KeyboardInput(CameraMovement movement, float deltaTime);
+    void processMouseMovement(float xPositionOffset, float yPositionOffset);
+    void processMouseScroll(float yPositionOffset);
 
 private:
     // Update the direction that the camera points, i.e. the camera front vector.
-    static void updateCameraVectors();
+    void updateCameraVectors();
 };
+
 }
