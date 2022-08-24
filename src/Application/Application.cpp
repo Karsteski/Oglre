@@ -8,6 +8,7 @@
 #include "VertexBufferLayout.h"
 
 // Maths Library
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
@@ -178,7 +179,7 @@ void Oglre::Application::Run()
 
     // Render and event loop.
     while (!glfwWindowShouldClose(window)) {
-
+        updateDeltaTime();
         // DearImGUI things
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -308,7 +309,7 @@ bool Oglre::Application::MouseButtonPressed()
     }
 }
 
-float Oglre::Application::GetDeltaTime()
+float Oglre::Application::updateDeltaTime()
 {
     static float deltaTime = 0.0f;
     static float currentTime = 0.0f;
@@ -327,28 +328,26 @@ float Oglre::Application::GetDeltaTime()
 
 void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window, Camera& camera)
 {
-    const float deltaTime = Application::GetDeltaTime();
-
-    // moveCamera(m_camera, Oglre::CameraMovement::FORWARD);
- 
-    // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::FORWARD, deltaTime);
+        camera.moveCamera(CameraMovement::FORWARD);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::BACKWARD, deltaTime);
+        camera.moveCamera(CameraMovement::BACKWARD);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::LEFT, deltaTime);
+
+        camera.moveCamera(CameraMovement::LEFT);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::RIGHT, deltaTime);
+
+        camera.moveCamera(CameraMovement::RIGHT);
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::UP, deltaTime);
+
+        camera.moveCamera(CameraMovement::UP);
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        camera.KeyboardInput(Oglre::CameraMovement::DOWN, deltaTime);
+        camera.moveCamera(CameraMovement::DOWN);
     }
 }
 

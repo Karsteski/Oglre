@@ -49,7 +49,7 @@ public:
 
     static bool IsFirstMouseInput(); // Check if mouse input has been received for the first time.
     static bool MouseButtonPressed(); // Check if right mouse button is being pressed.
-    static float GetDeltaTime(); // Get frametime, i.e. the time taken to render a frame.
+    static float updateDeltaTime(); // Get frametime, i.e. the time taken to render a frame.
 
     // ----------------------
     // OpenGL Error Functions

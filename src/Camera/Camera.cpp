@@ -1,10 +1,11 @@
 #include "Camera.h"
 
+#include "Application.h"
+
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
-
 
 Oglre::Camera::Camera()
 {
@@ -17,10 +18,11 @@ glm::mat4 Oglre::Camera::GetCameraViewMatrix()
 }
 
 bool Oglre::Camera::moveCamera( CameraMovement movement){
-    float cameraVelocity = m_cameraSpeed  ; // * deltaTime
+    float deltaTime = Application::updateDeltaTime();
+    float cameraVelocity = m_cameraSpeed * deltaTime * 30;  // nonsense magic number. TODO
 
+    // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (!m_constrainMovement) {
-        // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
         switch (movement) {
         case CameraMovement::FORWARD: {
             m_cameraPosition += cameraVelocity * m_cameraFront;
@@ -68,37 +70,40 @@ void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
     // - Have camera just be set of positions and direction
     // - Have free function to move a camera.
     // - Have a function that has a static time variable, then updates on time passed since last call i.e. in render loop
-    float cameraVelocity = m_cameraSpeed * deltaTime;
 
-    if (!m_constrainMovement) {
-        // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
-        switch (movement) {
-        case CameraMovement::FORWARD: {
-            m_cameraPosition += cameraVelocity * m_cameraFront;
-            break;
-        }
-        case CameraMovement::BACKWARD: {
-            m_cameraPosition -= cameraVelocity * m_cameraFront;
-            break;
-        }
-        case CameraMovement::LEFT: {
-            m_cameraPosition -= cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
-            break;
-        }
-        case CameraMovement::RIGHT: {
-            m_cameraPosition += cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
-            break;
-        }
-        case CameraMovement::UP: {
-            m_cameraPosition += cameraVelocity * m_cameraUp;
-            break;
-        }
-        case CameraMovement::DOWN: {
-            m_cameraPosition -= cameraVelocity * m_cameraUp;
-            break;
-        }
-        }
-    }
+
+
+    // float cameraVelocity = m_cameraSpeed * deltaTime;
+    //
+    // if (!m_constrainMovement) {
+    //     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
+    //     switch (movement) {
+    //     case CameraMovement::FORWARD: {
+    //         m_cameraPosition += cameraVelocity * m_cameraFront;
+    //         break;
+    //     }
+    //     case CameraMovement::BACKWARD: {
+    //         m_cameraPosition -= cameraVelocity * m_cameraFront;
+    //         break;
+    //     }
+    //     case CameraMovement::LEFT: {
+    //         m_cameraPosition -= cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
+    //         break;
+    //     }
+    //     case CameraMovement::RIGHT: {
+    //         m_cameraPosition += cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
+    //         break;
+    //     }
+    //     case CameraMovement::UP: {
+    //         m_cameraPosition += cameraVelocity * m_cameraUp;
+    //         break;
+    //     }
+    //     case CameraMovement::DOWN: {
+    //         m_cameraPosition -= cameraVelocity * m_cameraUp;
+    //         break;
+    //     }
+    //     }
+    // }
 }
 
 void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionOffset)
