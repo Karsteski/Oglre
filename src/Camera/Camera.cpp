@@ -63,49 +63,6 @@ bool Oglre::Camera::zoomCamera(float adjust_FOV){
 
 }
 
-void Oglre::Camera::KeyboardInput(CameraMovement movement, float deltaTime)
-{
-    // To refactor KeyboardInput.
-    // - Move Input stuff into free functions
-    // - Have camera just be set of positions and direction
-    // - Have free function to move a camera.
-    // - Have a function that has a static time variable, then updates on time passed since last call i.e. in render loop
-
-
-
-    // float cameraVelocity = m_cameraSpeed * deltaTime;
-    //
-    // if (!m_constrainMovement) {
-    //     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
-    //     switch (movement) {
-    //     case CameraMovement::FORWARD: {
-    //         m_cameraPosition += cameraVelocity * m_cameraFront;
-    //         break;
-    //     }
-    //     case CameraMovement::BACKWARD: {
-    //         m_cameraPosition -= cameraVelocity * m_cameraFront;
-    //         break;
-    //     }
-    //     case CameraMovement::LEFT: {
-    //         m_cameraPosition -= cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
-    //         break;
-    //     }
-    //     case CameraMovement::RIGHT: {
-    //         m_cameraPosition += cameraVelocity * glm::normalize(glm::cross(m_cameraFront, m_cameraUp));
-    //         break;
-    //     }
-    //     case CameraMovement::UP: {
-    //         m_cameraPosition += cameraVelocity * m_cameraUp;
-    //         break;
-    //     }
-    //     case CameraMovement::DOWN: {
-    //         m_cameraPosition -= cameraVelocity * m_cameraUp;
-    //         break;
-    //     }
-    //     }
-    // }
-}
-
 void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionOffset)
 {
     xPositionOffset *= m_cameraSensitivity;

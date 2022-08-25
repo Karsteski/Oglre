@@ -42,13 +42,13 @@ public:
     static constexpr int initialWindowHeight = 600;
     static inline glm::vec2 lastMousePosition = glm::vec2(initialWindowWidth / 2.0f, initialWindowHeight / 2.0f);
 
-    static void ProcessKeyboardInput(GLFWwindow* window, Camera& camera); // Manage GLFW's keyboard input
-    static void MouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition); // Listen for mouse-movement events
-    static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods); // Listen for mouse button presses.
-    static void MouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset); // Listen for mouse scroll wheel.
+    static void processKeyboardInput(GLFWwindow* window, Camera& camera); // Manage GLFW's keyboard input
+    static void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition); // Listen for mouse-movement events
+    static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods); // Listen for mouse button presses.
+    static void mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset); // Listen for mouse scroll wheel.
 
-    static bool IsFirstMouseInput(); // Check if mouse input has been received for the first time.
-    static bool MouseButtonPressed(); // Check if right mouse button is being pressed.
+    static bool isFirstMouseInput(); // Check if mouse input has been received for the first time.
+    static bool mouseButtonPressed(); // Check if right mouse button is being pressed.
     static float updateDeltaTime(); // Get frametime, i.e. the time taken to render a frame.
 
     // ----------------------

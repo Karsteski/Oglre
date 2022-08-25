@@ -30,6 +30,7 @@ public:
     glm::vec3 m_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Camera Options
+    // TODO: cameraPitch and cameraFOV both have invariants. Should encapsulate.
     float m_cameraPitch = 0.0f;
     float m_cameraYaw = -90.0f;
     float m_cameraSpeed = 1000.0f;
@@ -51,7 +52,6 @@ public:
     bool zoomCamera(float adjust_FOV);
 
     // TODO: Camera should NOT be processing keyboard input. It should only take a CameraMovements
-    void KeyboardInput(CameraMovement movement, float deltaTime);
     void processMouseMovement(float xPositionOffset, float yPositionOffset);
     void processMouseScroll(float yPositionOffset);
 

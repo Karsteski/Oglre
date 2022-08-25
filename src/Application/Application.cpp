@@ -222,12 +222,12 @@ void Oglre::Application::Run()
         glfwSetFramebufferSizeCallback(window, Oglre::Application::FramebufferSizeCallback);
 
         // Process keyboard commands.
-        Oglre::Application::ProcessKeyboardInput(window, camera);
+        Oglre::Application::processKeyboardInput(window, camera);
 
         // Process mouse input and movement.
         
         // TODO: Need to move these to free functions probably
-        // glfwSetMouseButtonCallback(window, Oglre::Application::MouseButtonCallback);
+        glfwSetMouseButtonCallback(window, Oglre::Application::mouseButtonCallback);
         // glfwSetCursorPosCallback(window, Oglre::Application::MouseMovementCallback);
         // glfwSetScrollCallback(window, Oglre::Application::MouseScrollWheelCallback);
 
@@ -289,7 +289,7 @@ GLFWwindow* Oglre::Application::GetWindow()
 // Application Information
 // -----------------------
 
-bool Oglre::Application::IsFirstMouseInput()
+bool Oglre::Application::isFirstMouseInput()
 {
     if (m_isFirstMouseInput) {
         m_isFirstMouseInput = false;
@@ -299,7 +299,7 @@ bool Oglre::Application::IsFirstMouseInput()
     }
 }
 
-bool Oglre::Application::MouseButtonPressed()
+bool Oglre::Application::mouseButtonPressed()
 {
     if (m_isRightMouseButtonPressed) {
         m_isRightMouseButtonPressed = false;
@@ -326,7 +326,7 @@ float Oglre::Application::updateDeltaTime()
 // Input Handling + Camera Movement
 // --------------------------------
 
-void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window, Camera& camera)
+void Oglre::Application::processKeyboardInput(GLFWwindow* window, Camera& camera)
 {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.moveCamera(CameraMovement::FORWARD);
@@ -352,7 +352,6 @@ void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window, Camera& camera
 }
 
 /* void Oglre::Application::MouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
-{
     if (Application::IsFirstMouseInput()) {
         Application::lastMousePosition.x = xPosition;
         Application::lastMousePosition.y = yPosition;
@@ -391,9 +390,9 @@ void Oglre::Application::ProcessKeyboardInput(GLFWwindow* window, Camera& camera
     if (m_isRightMouseButtonPressed) {
         m_camera.cameraFront = glm::normalize(cameraDirection);
     }
-}
+} */
 
-void Oglre::Application::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+void Oglre::Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -410,19 +409,19 @@ void Oglre::Application::MouseButtonCallback(GLFWwindow* window, int button, int
     }
 }
 
-void Oglre::Application::MouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset)
-{
-    m_camera.cameraFOV -= static_cast<float>(yPositionOffset);
+// void Oglre::Application::mouseScrollWheelCallback(GLFWwindow* window, double xPositionOffset, double yPositionOffset)
+// {
+//     m_camera.cameraFOV -= static_cast<float>(yPositionOffset);
+//
+//     // Constrain zoom/FOV values
+//     if (m_camera.cameraFOV < 1.0f) {
+//         m_camera.cameraFOV = 1.0f;
+//     }
+//     if (m_camera.cameraFOV > 90.0f) {
+//         m_camera.cameraFOV = 90.0f;
+//     }
+// }
 
-    // Constrain zoom/FOV values
-    if (m_camera.cameraFOV < 1.0f) {
-        m_camera.cameraFOV = 1.0f;
-    }
-    if (m_camera.cameraFOV > 90.0f) {
-        m_camera.cameraFOV = 90.0f;
-    }
-}
- */
 
 // ----------------------
 // OpenGL Error Functions
