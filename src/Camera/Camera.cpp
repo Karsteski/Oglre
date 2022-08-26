@@ -12,14 +12,21 @@ Oglre::Camera::Camera()
     updateCameraVectors();
 }
 
+// Camera Options
+float Oglre::Camera::getSensitivity()
+{
+    return m_cameraSensitivity;
+}
+
 glm::mat4 Oglre::Camera::GetCameraViewMatrix()
 {
     return glm::lookAt(m_cameraPosition, m_cameraPosition + m_cameraFront, m_cameraUp);
 }
 
-bool Oglre::Camera::moveCamera( CameraMovement movement){
+bool Oglre::Camera::moveCamera(CameraMovement movement)
+{
     float deltaTime = Application::updateDeltaTime();
-    float cameraVelocity = m_cameraSpeed * deltaTime * 30;  // nonsense magic number. TODO
+    float cameraVelocity = m_cameraSpeed * deltaTime * 30; // nonsense magic number. TODO
 
     // The resulting right vectors are normalized as the camera speed would otherwise be based on the camera's orientation.
     if (!m_constrainMovement) {
@@ -56,22 +63,14 @@ bool Oglre::Camera::moveCamera( CameraMovement movement){
     return false;
 }
 
-bool Oglre::Camera::rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees){
-
-}
-bool Oglre::Camera::zoomCamera(float adjust_FOV){
-
-}
-
-void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionOffset)
+bool Oglre::Camera::rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees)
 {
-    xPositionOffset *= m_cameraSensitivity;
-    yPositionOffset *= m_cameraSensitivity;
 
-    if (!m_constrainMovement) {
-        m_cameraYaw += xPositionOffset;
-        m_cameraPitch += yPositionOffset;
-    }
+    float x_rotate = x_axis_rotate_degrees * m_cameraSensitivity;
+    float y_rotate = y_axis_rotate_degrees * m_cameraSensitivity;
+
+    m_cameraYaw += x_rotate;
+    m_cameraPitch += y_rotate;
 
     // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
     if (m_cameraPitch > 89.0f) {
@@ -81,14 +80,22 @@ void Oglre::Camera::processMouseMovement(float xPositionOffset, float yPositionO
         m_cameraPitch = -89.0f;
     }
 
-    updateCameraVectors();
+    // Create camera direction vector using Euler angles.
+    glm::vec3 cameraDirection;
+
+    // Must convert to radians first.
+    // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
+    cameraDirection.x = std::cos(glm::radians(m_cameraYaw)) * std::cos(glm::radians(m_cameraPitch));
+    cameraDirection.y = sin(glm::radians(m_cameraPitch));
+    cameraDirection.z = std::sin(glm::radians(m_cameraYaw)) * std::cos(glm::radians(m_cameraPitch));
+
+    m_cameraFront = glm::normalize(cameraDirection);
 }
 
-void Oglre::Camera::processMouseScroll(float yPositionOffset)
+bool Oglre::Camera::zoomCamera(float adjust_FOV)
 {
-    m_cameraFOV -= static_cast<float>(yPositionOffset);
-
-    // Constrain zoom/FOV values.
+    m_cameraFOV -= static_cast<float>(adjust_FOV);
+    // Constrain zoom/FOV values
     if (m_cameraFOV < 1.0f) {
         m_cameraFOV = 1.0f;
     }

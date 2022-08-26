@@ -42,6 +42,8 @@ public:
     static constexpr int initialWindowHeight = 600;
     static inline glm::vec2 lastMousePosition = glm::vec2(initialWindowWidth / 2.0f, initialWindowHeight / 2.0f);
 
+    static inline Camera m_camera = Camera();
+
     static void processKeyboardInput(GLFWwindow* window, Camera& camera); // Manage GLFW's keyboard input
     static void mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition); // Listen for mouse-movement events
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods); // Listen for mouse button presses.

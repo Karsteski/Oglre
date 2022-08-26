@@ -17,7 +17,6 @@ enum class CameraMovement : int {
     DOWN
 };
 
-
 class Camera {
 public:
     Camera();
@@ -32,9 +31,9 @@ public:
     // Camera Options
     // TODO: cameraPitch and cameraFOV both have invariants. Should encapsulate.
     float m_cameraPitch = 0.0f;
+    float getSensitivity();
     float m_cameraYaw = -90.0f;
     float m_cameraSpeed = 1000.0f;
-    float m_cameraSensitivity = 0.25f;
     float m_cameraFOV = 90.0f;
 
     // Camera Flags
@@ -51,11 +50,10 @@ public:
     bool rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees);
     bool zoomCamera(float adjust_FOV);
 
-    // TODO: Camera should NOT be processing keyboard input. It should only take a CameraMovements
-    void processMouseMovement(float xPositionOffset, float yPositionOffset);
-    void processMouseScroll(float yPositionOffset);
-
 private:
+    // Camera Options
+    float m_cameraSensitivity = 0.25f;
+
     // Update the direction that the camera points, i.e. the camera front vector.
     void updateCameraVectors();
 };
