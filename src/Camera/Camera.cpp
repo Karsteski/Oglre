@@ -8,19 +8,62 @@
 #include "glm/geometric.hpp"
 
 Oglre::Camera::Camera()
+    : m_cameraPitch(0.0f)
+    , m_cameraYaw(-89.0f)
+    , m_cameraSpeed(1000.0f)
+    , m_cameraFOV(90.0f)
+    , m_cameraSensitivity(0.25f)
+
+    , m_cameraFront(glm::vec3(0.0f, 0.0f, -1.0f))
+    , m_cameraPosition(glm::vec3(200.0f, 200.0f, 400.0f))
+    , m_cameraUp(glm::vec3(0.0f, 1.0f, 0.0f))
+    , m_cameraRight(glm::vec3(0.0f, 0.0f, 0.0f))
+    , m_worldUp(glm::vec3(0.0f, 1.0f, 0.0f))
 {
     updateCameraVectors();
 }
 
-// Camera Options
+float Oglre::Camera::getFOV()
+{
+    return m_cameraFOV;
+}
+
 float Oglre::Camera::getSensitivity()
 {
     return m_cameraSensitivity;
 }
 
+bool Oglre::Camera::getConstrainment()
+{
+    return m_constrainMovement;
+}
+
+
+    glm::vec3 Oglre::Camera::getCameraFront(){
+   return m_cameraFront; 
+}
+    glm::vec3 Oglre::Camera::getPosition(){
+    return m_cameraPosition;
+}
+
 glm::mat4 Oglre::Camera::GetCameraViewMatrix()
 {
     return glm::lookAt(m_cameraPosition, m_cameraPosition + m_cameraFront, m_cameraUp);
+}
+
+void Oglre::Camera::setCameraFront(glm::vec3 cameraFront)
+{
+    m_cameraFront = cameraFront;
+}
+
+void Oglre::Camera::setCameraPosition(glm::vec3 cameraPosition)
+{
+    m_cameraPosition = cameraPosition;
+}
+
+void Oglre::Camera::constrainMovement(bool constrain)
+{
+    m_constrainMovement = constrain;
 }
 
 bool Oglre::Camera::moveCamera(CameraMovement movement)
@@ -75,15 +118,18 @@ bool Oglre::Camera::rotateCamera(float x_axis_rotate_degrees, float y_axis_rotat
     // Constrain pitch because at 90 degrees the LookAt function flips the camera direction.
     if (m_cameraPitch > 89.0f) {
         m_cameraPitch = 89.0f;
+
+        return false;
     }
     if (m_cameraPitch < -89.0f) {
         m_cameraPitch = -89.0f;
+        return false;
     }
 
     // Create camera direction vector using Euler angles.
     glm::vec3 cameraDirection;
 
-    // Must convert to radians first.
+    // Must convert ro radians first.
     // Note that xz sides are influenced by cos(pitch) and must therefore be included in their calculations.
     cameraDirection.x = std::cos(glm::radians(m_cameraYaw)) * std::cos(glm::radians(m_cameraPitch));
     cameraDirection.y = sin(glm::radians(m_cameraPitch));

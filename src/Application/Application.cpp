@@ -188,14 +188,23 @@ void Oglre::Application::Run()
         // Basic Camera controls through DearImGUI
         {
             ImGui::Begin("Camera Controls");
+            
+            // Must initialize using camera
+            glm::vec3 cameraPosition = m_camera.getPosition();
+            glm::vec3 cameraFront = m_camera.getCameraFront();
 
-            ImGui::SliderFloat3("Camera Position", &m_camera.m_cameraPosition[0], 0.0f, 1000.0f);
-            ImGui::SliderFloat3("Camera View", &m_camera.m_cameraFront[0], 0.0f, 1000.0f);
+            // TODO: Give camera a way to save its default values
+            ImGui::SliderFloat3("Camera Position", &cameraPosition[0], 0.0f, 1000.0f);
+            ImGui::SliderFloat3("Camera View", &cameraFront[0], 0.0f, 1000.0f);
 
             if (ImGui::Button("Reset Camera")) {
-                m_camera.m_cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
-                m_camera.m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+                cameraPosition = glm::vec3(200.0f, 200.0f, 200.0f);
+                cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
             }
+
+            // Actually set the values here
+            m_camera.setCameraFront(cameraFront);
+            m_camera.setCameraPosition(cameraPosition);
 
             static bool wireframeMode = false;
             ImGui::Checkbox("Enable Wireframe Mode", &wireframeMode);
@@ -222,7 +231,7 @@ void Oglre::Application::Run()
         Oglre::Application::processKeyboardInput(window, m_camera);
 
         // Process mouse input and movement.
-        
+
         // TODO: Need to move these to free functions probably
         glfwSetMouseButtonCallback(window, Oglre::Application::mouseButtonCallback);
         glfwSetCursorPosCallback(window, Oglre::Application::mouseMovementCallback);
@@ -230,11 +239,11 @@ void Oglre::Application::Run()
 
         // Projection matrix for use in the Vertex Shader.
         if (f_Projection == 0) {
-            projection = glm::perspective(glm::radians(m_camera.m_cameraFOV), (float)currentWindowWidth / currentWindowHeight, 0.1f, 10000.0f);
+            projection = glm::perspective(glm::radians(m_camera.getFOV()), (float)currentWindowWidth / currentWindowHeight, 0.1f, 10000.0f);
         } else if (f_Projection == 1) {
             // TODO: Works, but I need the object to be in the same position when switching between perspectives (Possible..?)
-            static float min = -pow(10, glm::radians(m_camera.m_cameraFOV));
-            static float max = pow(10, glm::radians(m_camera.m_cameraFOV));
+            static float min = -pow(10, glm::radians(m_camera.getFOV()));
+            static float max = pow(10, glm::radians(m_camera.getFOV()));
 
             projection = glm::ortho(min, max, min, max, -10000.0f, 10000.0f);
         }
@@ -348,7 +357,7 @@ void Oglre::Application::processKeyboardInput(GLFWwindow* window, Camera& camera
     }
 }
 
- void Oglre::Application::mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
+void Oglre::Application::mouseMovementCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
     // To prevent the mouse jumping around upon first input
     if (Application::isFirstMouseInput()) {
@@ -366,7 +375,7 @@ void Oglre::Application::processKeyboardInput(GLFWwindow* window, Camera& camera
     if (m_isRightMouseButtonPressed) {
         m_camera.rotateCamera(xPositionOffset, yPositionOffset);
     }
-} 
+}
 
 void Oglre::Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -390,7 +399,6 @@ void Oglre::Application::mouseScrollWheelCallback(GLFWwindow* window, double xPo
     // No use for sideways scroll at the moment (xPositionOffset)
     m_camera.zoomCamera(yPositionOffset);
 }
-
 
 // ----------------------
 // OpenGL Error Functions

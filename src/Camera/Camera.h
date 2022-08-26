@@ -21,38 +21,41 @@ class Camera {
 public:
     Camera();
 
-    // Camera Attributes.
-    glm::vec3 m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 m_cameraPosition = glm::vec3(200.0f, 200.0f, 400.0f);
-    glm::vec3 m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 m_cameraRight = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 m_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    // Camera Options
-    // TODO: cameraPitch and cameraFOV both have invariants. Should encapsulate.
-    float m_cameraPitch = 0.0f;
+    float getFOV();
     float getSensitivity();
-    float m_cameraYaw = -90.0f;
-    float m_cameraSpeed = 1000.0f;
-    float m_cameraFOV = 90.0f;
+    bool getConstrainment();
 
-    // Camera Flags
-    bool m_constrainMovement = false;
-    glm::vec2 m_xPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    glm::vec2 m_nPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
-    glm::vec2 m_zPosConstraint; // TODO: NOT CURRENTLY UTILIZED.
+    glm::vec3 getCameraFront();
+    glm::vec3 getPosition();
 
     // Get the matrix that defines what the camera "sees".
     glm::mat4 GetCameraViewMatrix();
 
-    bool moveCamera(CameraMovement movement);
+    void setCameraFront(glm::vec3 cameraFront);
+    void setCameraPosition(glm::vec3 cameraPosition);
 
+    void constrainMovement(bool constrain);
+    bool moveCamera(CameraMovement movement);
     bool rotateCamera(float x_axis_rotate_degrees, float y_axis_rotate_degrees);
     bool zoomCamera(float adjust_FOV);
 
 private:
     // Camera Options
-    float m_cameraSensitivity = 0.25f;
+    float m_cameraPitch;
+    float m_cameraYaw;
+    float m_cameraSpeed;
+    float m_cameraFOV;
+    float m_cameraSensitivity;
+
+    // Camera Attributes.
+    glm::vec3 m_cameraFront;
+    glm::vec3 m_cameraPosition;
+    glm::vec3 m_cameraUp;
+    glm::vec3 m_cameraRight;
+    glm::vec3 m_worldUp;
+
+    // Camera Flags
+    bool m_constrainMovement = false;
 
     // Update the direction that the camera points, i.e. the camera front vector.
     void updateCameraVectors();
