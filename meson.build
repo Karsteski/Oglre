@@ -6,7 +6,7 @@ message('Warning level = ' + get_option('warning_level'))
 message('Build type = ' + get_option('buildtype'))
 
 glew_dep = dependency('glew', fallback : ['glew', 'glew_dep'])
-glfw_dep = dependency('glfw3')
+glfw_dep = dependency('glfw3', fallback : ['glfw', 'glfw_dep'])
 opengl_dep = dependency('opengl')
 imgui_dep = dependency('imgui', fallback : ['imgui', 'imgui_dep'])
 glm_dep = dependency('glm', fallback: ['glm', 'glm_dep'])
